@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"incremental": true,
+		"target": "ES2022",
+		"module": "CommonJS",
+		"lib": ["dom", "es2022"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		"skipLibCheck": true,
+		"strict": true,
+		"sourceMap": true,
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"noImplicitAny": false,
+		"noEmit": true,
+		"baseUrl": ".",
+		"paths": {
+			"react": ["./node_modules/@types/react"],
+			"@erwb/*": ["packages/*/src"]
+		}
+	},
+	"include": ["*/**/src/**/*", "*/**/__tests__/**/*"]
+}

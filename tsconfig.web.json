@@ -1,0 +1,12 @@
+{
+	"extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
+	"include": [
+		"packages/erwb-frontend/**/*",
+		"**/renderer/**/*"
+	],
+	"compilerOptions": {
+		"composite": true,
+		"jsx": "react-jsx",
+		"baseUrl": "."
+	}
+}

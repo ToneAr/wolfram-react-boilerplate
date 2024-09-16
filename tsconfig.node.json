@@ -1,0 +1,14 @@
+{
+	"extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+	"include": [
+		"**/main/**/*"
+	],
+	"exclude": [
+		"**/build/**/*",
+		"**/out/**/*"
+	],
+	"compilerOptions": {
+		"composite": true,
+		"types": ["electron-vite/node"]
+	}
+}
