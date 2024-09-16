@@ -38,23 +38,23 @@ EchoTemporaryCLI[
 
 EchoTemporaryCLI[
 	(
-		{port, expression} |-> (
+		{port, expression, name} |-> (
 			If[MatchQ[expression, _URLDispatcher],
 				KeyValueMap[{endpoint, subExpression} |->
-					ServiceDeploy[so, <|
+					ServiceDeploy[was, <|
 							"Contents" -> subExpression,
-							"Resource" -> domain <> endpoint <> ".wl",
-							"Endpoint" -> domain <> endpoint,
+							"Resource" -> URLBuild[{domain, name, endpoint <> ".wl"}],
+							"Endpoint" -> Echo[URLBuild[{domain, name, endpoint}]],
 							"ResourceType" -> "ActiveWebElement"
 						|>,
 						IncludeDefinitions -> True
 					],
 					<|expression[[1]]|>
 				],
-				ServiceDeploy[so, <|
+				ServiceDeploy[was, <|
 						"Contents" -> expression,
-						"Resource" -> domain <> "/" <> ToString[port] <> ".wl",
-						"Endpoint" -> domain <> "/" <> ToString[port] ,
+						"Resource" -> URLBuild[{domain, name <> ".wl"}],
+						"Endpoint" -> Echo[URLBuild[{domain, name}]] ,
 						"ResourceType" -> "ActiveWebElement"
 					|>,
 					IncludeDefinitions -> True

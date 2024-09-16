@@ -37,7 +37,8 @@ Print[ "\n","---------------- LocalDeploy: "<>ToString[PacletObject["LocalDeploy
 WaitAll[
 	Function[{
 			port,
-			expr
+			expr,
+			name
 		},
 		ParallelSubmit[
 			Print[

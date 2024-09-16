@@ -3,7 +3,7 @@
 	you want to deploy in the following form:
 
 		{
-			{ port, expr },
+			{ port, expr, name },
 			...
 		}
 
@@ -29,7 +29,8 @@
 					#in
 				]&
 			]
-		}]
+		}],
+		"Demo"
 	}
 	,
 	{
@@ -40,6 +41,7 @@
 		8888,
 		URLDispatcher[{
 			"/aliveQ" -> APIFunction[{}, True &]
-		}]
+		}],
+		""
 	}
 }
