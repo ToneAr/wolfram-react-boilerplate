@@ -1,8 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 export type Channels = string;
 
-console.log('preload debug');
-
 const electronHandler = {
 	env: 'electron',
 	changeZoom: (we: { deltaY: number; ctrlKey: boolean }) =>

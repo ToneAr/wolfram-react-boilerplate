@@ -1,10 +1,10 @@
 import { createRoot } from 'react-dom/client';
-import { Frontend } from '@erwb/frontend';
+import { Frontend } from '@wrb/frontend';
 import { io } from 'socket.io-client';
 import WebHandler from './WebHandler';
 import React from 'react';
 
-import '@erwb/frontend/build/index.css';
+import '@wrb/frontend/build/index.css';
 
 const socket = io('localhost:3000');
 const webHandler = new WebHandler(socket);

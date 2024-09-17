@@ -6,6 +6,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // Hooks
 import { WLProvider, useWL } from './hooks/useWL';
+import { IPCProvider } from './hooks/useIPC';
 
 // Styles
 import './css/App.css';
@@ -36,13 +37,15 @@ function AppContent() {
 	);
 }
 
-export default function Frontend({ api }: { api?: Handler }) {
+export default function Frontend({ api }: { api: Handler }) {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<WLProvider api={api}>
-				<AppContent />
-			</WLProvider>
+			<IPCProvider api={api}>
+				<WLProvider>
+					<AppContent />
+				</WLProvider>
+			</IPCProvider>
 		</ThemeProvider>
 	);
 }

@@ -1,10 +1,11 @@
 {
-	"name": "@erwb/electron",
+	"name": "@wrb/electron",
 	"version": "0.9.0",
 	"description": "Electron + React + TS + WL",
 	"repository": "git+https://github.com/ToneAr/electron-react-wl-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
 	"main": "out/app/src/main/main.js",
+	"private": true,
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -74,18 +75,18 @@
 			"category": "Development"
 		},
 		"directories": {
-			"buildResources": "../../node_modules/@erwb/frontend/assets",
+			"buildResources": "../../node_modules/@wrb/frontend/assets",
 			"output": "out/build"
 		},
 		"extraResources": [
 			{
-				"from": "../../node_modules/@erwb/frontend/assets",
+				"from": "../../node_modules/@wrb/frontend/assets",
 				"to": "assets",
 				"filter": ["**/*"]
 			},
 			{
-				"from": "../../node_modules/@erwb/wl",
-				"to": "node_modules/@erwb/wl",
+				"from": "../../node_modules/@wrb/wl",
+				"to": "node_modules/@wrb/wl",
 				"filter": ["**/*"]
 			}
 		],
@@ -133,8 +134,8 @@
 		"ts-node": "^10.9.2"
 	},
 	"peerDependancies": {
-		"@erwb/wl": "*",
-		"@erwb/frontend": "*",
+		"@wrb/wl": "*",
+		"@wrb/frontend": "*",
 		"@electron-toolkit/eslint-config-prettier": "*",
 		"@electron-toolkit/eslint-config-ts": "*",
 		"@electron-toolkit/preload": "*",

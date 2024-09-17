@@ -1,14 +1,14 @@
 import { spawn, execSync, ChildProcessWithoutNullStreams } from 'child_process';
-import { Server } from 'socket.io';
+import { Socket } from 'socket.io';
 import axios from 'axios';
 import os from 'os';
 
 export class WLManager {
 	wlProc: ChildProcessWithoutNullStreams | null = null;
 	isQuitting = false;
-	io: Server;
+	io: Socket;
 
-	constructor(io: Server) {
+	constructor(io: Socket) {
 		this.io = io;
 		this.startWL = this.startWL.bind(this);
 		this.cleanupWL = this.cleanupWL.bind(this);
@@ -38,7 +38,7 @@ export class WLManager {
 				'-noprompt',
 				'-rawterm',
 				'-script',
-				require.resolve('@erwb/wl'),
+				require.resolve('@wrb/wl'),
 			],
 			{
 				detached: true,

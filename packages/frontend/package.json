@@ -1,5 +1,5 @@
 {
-	"name": "@erwb/frontend",
+	"name": "@wrb/frontend",
 	"version": "0.9.0",
 	"description": "Electron + React + TS + WL",
 	"repository": "git+https://github.com/ToneAr/electron-react-wl-boilerplate",
@@ -8,12 +8,13 @@
 	"module": "build/index.es.js",
 	"types": "build/index.d.ts",
 	"source": "src/index.ts",
+	"private": true,
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
 		"typecheck:web": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
 		"typecheck": "yarn typecheck:web",
-		"dev": "concurrently \"yarn workspace @erwb/wl start\" \"vite\"",
+		"dev": "concurrently \"yarn workspace @wrb/web start:server\" \"cross-env NODE_ENV=development vite\"",
 		"build": "vite build"
 	},
 	"dependencies": {
@@ -46,7 +47,7 @@
 		"vite-plugin-svgr": "^4.2.0"
 	},
 	"peerDependancies": {
-		"@erwb/hooks": "*",
+		"@wrb/hooks": "*",
 		"typescript": "*",
 		"@electron-toolkit/eslint-config-prettier": "*",
 		"@electron-toolkit/eslint-config-ts": "*",

@@ -5,13 +5,21 @@
  */
 
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog, IpcMainEvent } from 'electron';
+import {
+	app,
+	BrowserWindow,
+	shell,
+	ipcMain,
+	dialog,
+	IpcMainEvent,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import nodeChildProcess from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import * as os from 'os';
+import fs from 'fs';
 import axios from 'axios';
 
 class AppUpdater {
@@ -56,13 +64,21 @@ const createWindow = async () => {
 
 	const RESOURCES_PATH = app.isPackaged
 		? path.join(process.resourcesPath, 'assets')
-		: path.join(__dirname, '../../assets');
+		: path.join(
+				path.dirname(require.resolve('@wrb/frontend/assets/icon.png')),
+			);
 
 	const getAssetPath = (...paths: string[]): string => {
 		return path.join(RESOURCES_PATH, ...paths);
 	};
 
-	console.log(path.join(__dirname, 'preload.js'));
+	const iconPath = getAssetPath('icon.png');
+	console.log('path::', iconPath);
+	if (!fs.existsSync(iconPath)) {
+		console.error('Icon file does not exist:', iconPath);
+	} else {
+		console.log('Icon file exists:', iconPath);
+	}
 
 	mainWindow = new BrowserWindow({
 		show: false,
@@ -164,7 +180,7 @@ function startWL(): void {
 			'-noprompt',
 			'-rawterm',
 			'-script',
-			require.resolve('@erwb/wl'),
+			require.resolve('@wrb/wl'),
 		],
 		{
 			detached: true,
@@ -174,7 +190,13 @@ function startWL(): void {
 	console.log(`WL pid: ${wlProc.pid}`);
 
 	wlProc.stdout.on('data', (data) => {
-		const dataStr = data.toString().trim();
+		const dataStr = data
+			.toString()
+			.trim()
+			.replace(/\\n/g, '\n')
+			.replace(/\\t/g, '\t')
+			.replace(/\\"/g, '"')
+			.replace(/\\\\/g, '\\');
 		console.log(`WL stdout: ${dataStr}`);
 		if (dataStr === `"Type 'exit' to end process:"`) {
 			mainWindow?.webContents.send('wl-status', 0);

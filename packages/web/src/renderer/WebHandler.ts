@@ -5,21 +5,21 @@ class WebHandler {
 	public api: {
 		env: string;
 		ipc: {
-			on: (event: string, callback: (...args: any[]) => void) => void;
-			send: (event: string, ...args: any[]) => void;
+			on: (channel: string, callback: (...args: any[]) => void) => void;
+			send: (channel: string, ...args: any[]) => void;
 			once: (channel: string, func: (...args: unknown[]) => void) => void;
 		};
 	};
-	private on(event: string, callback: (...args: any[]) => void): void {
-		console.log(`Setting up listener for event: ${event}`);
-		this.socket.on(event, (...args) => {
-			console.log(`Received event: ${event}`, args);
+	private on(channel: string, callback: (...args: any[]) => void): void {
+		console.log(`Setting up listener for event: ${channel}`);
+		this.socket.on(channel, (...args) => {
+			console.log(`Received event: ${channel}`, args);
 			callback(...args);
 		});
 	}
-	private send(event: string, ...args: any[]): void {
-		console.log(`Sending event: ${event}`, args);
-		this.socket.emit(event, ...args);
+	private send(channel: string, ...args: any[]): void {
+		console.log(`Sending event: ${channel}`, args);
+		this.socket.emit(channel, ...args);
 	}
 	private once(channel: string, func: (...args: unknown[]) => void): void {
 		this.socket.once(channel, func);

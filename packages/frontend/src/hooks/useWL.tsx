@@ -1,4 +1,5 @@
 import { Handler } from '../api';
+import { useIPC } from './useIPC';
 import {
 	createContext,
 	useCallback,
@@ -11,8 +12,9 @@ interface IuseWL {
 	isActive: boolean;
 	req: (endpoint: string, dataIn?: object, port?: number) => any;
 }
-function useWl(api?: Handler): IuseWL {
+function useWl(): IuseWL {
 	const [isActive, setIsActive] = useState<boolean>(false);
+	const [api] = useState<Handler>(useIPC());
 
 	function handleWlCode(code) {
 		if (code === 0) {
@@ -25,33 +27,29 @@ function useWl(api?: Handler): IuseWL {
 	}
 
 	useEffect(() => {
-		if (api) {
-			api.ipc.on('wl-status', (code) => {
-				handleWlCode(code);
-				console.log('wl-status effect:', isActive);
-			});
-		}
-	}, [api]);
+		api.ipc.on('wl-status', (code) => {
+			handleWlCode(code);
+			console.log('wl-status effect:', isActive);
+		});
+	});
 
 	async function req(
 		endpoint: string,
 		dataIn: object = {},
 		port: number = 4848,
 	): Promise<unknown> {
-		if (api) {
-			return new Promise((resolve, reject) => {
-				try {
-					api.ipc.send('req', [endpoint, dataIn, port]);
+		return new Promise((resolve, reject) => {
+			try {
+				api.ipc.send('req', [endpoint, dataIn, port]);
 
-					api.ipc.once('req', (res) => {
-						console.log('Received response:', res);
-						resolve(res);
-					});
-				} catch (error) {
-					reject(error);
-				}
-			});
-		}
+				api.ipc.once('req', (res) => {
+					console.log('Received response:', res);
+					resolve(res);
+				});
+			} catch (error) {
+				reject(error);
+			}
+		});
 	}
 
 	const aliveQ = useCallback(async () => {
@@ -80,14 +78,8 @@ const WLContext = createContext<IuseWL>({
 	req: async () => {},
 });
 
-function WLProvider({
-	api,
-	children,
-}: {
-	api?: Handler;
-	children: React.ReactNode;
-}) {
-	const wl = useWl(api);
+function WLProvider({ children }: { children: React.ReactNode }) {
+	const wl = useWl();
 	return <WLContext.Provider value={wl}>{children}</WLContext.Provider>;
 }
 

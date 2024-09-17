@@ -1,12 +1,12 @@
 {
-	"name": "@erwb/wl",
+	"name": "@wrb/wl",
 	"version": "1.0.0",
 	"description": "Electron + React + TS + WL",
 	"repository": "git+https://github.com/ToneAr/electron-react-wl-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
 	"license": "MIT",
 	"main": "./deploy.wls",
-	"private": "true",
+	"private": true,
 	"scripts": {
 		"start": "wolframscript -script ./deploy.wls"
 	}

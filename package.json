@@ -1,9 +1,31 @@
 {
-	"name": "@erwb/erwb",
+	"name": "@wrb/wrb",
 	"version": "2.0.0",
-	"description": "Electron + React + TS + WL",
+	"description": "A monorepo for deployment of cross platform applications to desktop using electron vite or to the web using web sockets",
 	"repository": "git+https://github.com/ToneAr/electron-react-wl-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
+	"private": true,
+	"scripts": {
+		"format": "prettier --write .",
+		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix"
+		,
+		"dev:frontend": "yarn workspace @wrb/frontend dev",
+		"dev:electron": "yarn workspace @wrb/electron dev",
+		"dev:web": "yarn workspace @wrb/web dev"
+		,
+		"build:frontend": "yarn workspace @wrb/frontend build",
+		"build:electron": "yarn workspace @wrb/electron build",
+		"build:electron:linux": "yarn workspace @wrb/electron build:linux",
+		"build:electron:win": "yarn workspace @wrb/electron build:win",
+		"build:electron:mac": "yarn workspace @wrb/electron build:mac",
+
+		"build:web": "yarn workspace @wrb/web build"
+		,
+		"start:frontend": "yarn workspace @wrb/frontend start",
+		"start:electron": "yarn workspace @wrb/electron start",
+		"start:web": "yarn workspace @wrb/web start",
+		"start:wl": "yarn workspace @wrb/wl start"
+	},
 	"workspaces": [
 		"packages/*"
 	],
@@ -50,9 +72,6 @@
 		}
 	},
 	"license": "MIT",
-	"private": true,
-	"dependencies": {
-	},
 	"devDependencies": {
 		"@electron-toolkit/eslint-config-prettier": "^2.0.0",
 		"@electron-toolkit/eslint-config-ts": "^2.0.0",
@@ -84,6 +103,7 @@
 		"jest": "^29.7.0",
 		"prettier": "^3.3.3",
 		"tsx": "^4.19.1",
-		"typescript": "^5.6.0"
+		"typescript": "^5.6.0",
+		"concurrently": "^9.0.1"
 	}
 }
