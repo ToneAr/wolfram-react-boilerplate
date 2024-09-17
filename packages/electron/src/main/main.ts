@@ -137,7 +137,7 @@ ipcMain.on(
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			});
-			event.reply(response.data);
+			event.reply('req', response.data);
 			return response.data;
 		} catch (error) {
 			console.log(error);
