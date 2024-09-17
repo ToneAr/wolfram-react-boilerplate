@@ -1,11 +1,11 @@
 import express from 'express';
 import { createServer } from 'http';
-import { Server as SocketServer } from 'socket.io';
+import { Server } from 'socket.io';
 import { WLManager } from './wlManager';
 
 const app = express();
 const server = createServer(app);
-const io = new SocketServer(server, {
+const io = new Server(server, {
 	cors: {
 		origin: 'http://localhost:5173',
 		methods: ['GET', 'POST'],
@@ -20,23 +20,22 @@ if (!wlManager.checkWL()) {
 }
 
 io.on('connection', (socket) => {
-	console.log('A user connected');
+	console.log('[+]Connected users:', io.sockets.sockets.size);
 
-	socket.on('start-wl', () => {
-		console.log('Received start-wl event from client');
-		wlManager.startWL();
-		socket.emit('wl-status', 'starting');
-	});
+	// -------- Add event listeners --------
+	socket.on('start-wl', wlManager.startWL);
 
-	socket.on('stop-wl', () => {
-		console.log('Received stop-wl event from client');
-		wlManager.cleanupWL();
-		socket.emit('wl-status', 'starting');
-	});
+	socket.on('req', (args: [string, object, number]) =>
+		wlManager.req(...args),
+	);
+
+	socket.on('stop-wl', wlManager.cleanupWL);
 
 	socket.on('disconnect', () => {
-		console.log('User disconnected');
+		console.log('[-]Connected users:', io.sockets.sockets.size);
+		if (io.sockets.sockets.size < 1) wlManager.cleanupWL();
 	});
+	// -------------------------------------
 });
 
 const PORT = process.env.PORT || 3000;

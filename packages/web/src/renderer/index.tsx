@@ -1,46 +1,36 @@
 import { createRoot } from 'react-dom/client';
 import { Frontend } from '@erwb/frontend';
 import { io } from 'socket.io-client';
+import WebHandler from './WebHandler';
 import React from 'react';
 
 import '@erwb/frontend/build/index.css';
+
+const socket = io('localhost:3000');
+const webHandler = new WebHandler(socket);
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 root.render(
 	<React.StrictMode>
-		<Frontend />
+		<Frontend api={webHandler.api} />
 	</React.StrictMode>,
 );
 
-const newSocket = io('localhost:3000');
-const handleStoptWL = () => {
-	if (newSocket) {
-		console.log('Sending stop-wl event');
-		newSocket.emit('stop-wl');
-	}
-};
-
-console.log(newSocket);
-
-// Set up event listeners
-newSocket.on('connect', () => {
+webHandler.api.ipc.on('connect', () => {
 	console.log('Connected to server');
-
-	// Automatically start WL when connected
-	console.log('Sending start-wl event');
-	newSocket.emit('start-wl');
+	webHandler.api.ipc.send('start-wl');
 });
 
-newSocket.on('disconnect', () => {
+webHandler.api.ipc.on('disconnect', () => {
 	console.log('Disconnected from server');
 });
 
-newSocket.on('wl-status', (newStatus: string) => {
-	console.log('Wolfram Language status:', newStatus);
+window.addEventListener('beforeunload', () => {
+	socket.disconnect();
 });
 
-window.addEventListener('beforeunload', () => {
-	handleStoptWL();
-	newSocket.disconnect();
+// Debug
+webHandler.api.ipc.on('wl-status', (code) => {
+	console.log('Wolfram Language status:', code);
 });

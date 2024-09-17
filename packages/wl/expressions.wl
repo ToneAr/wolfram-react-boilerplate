@@ -8,7 +8,8 @@
 		}
 
 	expr: can be anything supported by GenerateHTTPResponse.
-	port: is given as an integer
+	port: is given as an integer.
+	name: String short of expression. Will be used as endpoint room in WAS.
 *)
 
 {
@@ -35,7 +36,7 @@
 	,
 	{
 		(*
-			Hertbeat Endpoint
+			Heartbeat Endpoint
 			Use this for diagnostics
 		*)
 		8888,

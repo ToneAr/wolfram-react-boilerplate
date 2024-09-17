@@ -1,12 +1,11 @@
-/// <reference types="./api" />
-
+import { Handler } from './api';
 // Packages
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // Hooks
-import { WLProvider, useWL } from '@erwb/hooks';
+import { WLProvider, useWL } from './hooks/useWL';
 
 // Styles
 import './css/App.css';
@@ -37,11 +36,11 @@ function AppContent() {
 	);
 }
 
-export default function Frontend() {
+export default function Frontend({ api }: { api?: Handler }) {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<WLProvider>
+			<WLProvider api={api}>
 				<AppContent />
 			</WLProvider>
 		</ThemeProvider>

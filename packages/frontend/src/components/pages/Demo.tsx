@@ -10,7 +10,7 @@ import {
 	Paper,
 	MenuItem,
 } from '@mui/material';
-import { useWL } from '@erwb/hooks';
+import { useWL } from '../../hooks/useWL';
 import '../../css/App.css';
 
 export default function Demo() {

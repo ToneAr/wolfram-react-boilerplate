@@ -14,9 +14,11 @@
 		"typecheck:web": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
 		"typecheck": "yarn typecheck:node && yarn typecheck:web",
 		"start": "concurrently \"yarn start:server\" \"yarn start:client\"",
-		"dev": "vite dev",
+		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"start:client": "vite",
 		"start:server": "ts-node ./src/main/server.ts",
+		"dev:client": "vite dev",
+		"dev:server": "nodemon",
 		"build": "yarn typecheck && vite build"
 	},
 	"dependencies": {
@@ -24,6 +26,7 @@
 		"@types/socket.io": "^3.0.2",
 		"@types/socket.io-client": "^3.0.0",
 		"express": "^4.21.0",
+		"nodemon": "^3.1.4",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-router-dom": "^6.26.2",
@@ -36,13 +39,13 @@
 		"vite": "^5.4.5"
 	},
 	"peerDependencies": {
-		"@erwb/wl": "*",
-		"@erwb/frontend": "*",
 		"@electron-toolkit/eslint-config-prettier": "*",
 		"@electron-toolkit/eslint-config-ts": "*",
 		"@electron-toolkit/preload": "*",
 		"@electron-toolkit/tsconfig": "*",
 		"@electron-toolkit/utils": "*",
+		"@erwb/frontend": "*",
+		"@erwb/wl": "*",
 		"@eslint/eslintrc": "*",
 		"@eslint/js": "*",
 		"@testing-library/jest-dom": "*",

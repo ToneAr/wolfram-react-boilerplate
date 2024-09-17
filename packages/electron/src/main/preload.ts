@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-export type Channels = 'ipc-example' | 'start-wl' | 'wl-status';
+export type Channels = string;
 
 console.log('preload debug');
 
@@ -7,8 +7,8 @@ const electronHandler = {
 	env: 'electron',
 	changeZoom: (we: { deltaY: number; ctrlKey: boolean }) =>
 		ipcRenderer.invoke('change-zoom-level', we),
-	ipcRenderer: {
-		sendMessage(channel: Channels, ...args: unknown[]) {
+	ipc: {
+		send(channel: Channels, ...args: unknown[]) {
 			ipcRenderer.send(channel, ...args);
 		},
 		on(channel: Channels, func: (...args: unknown[]) => void) {

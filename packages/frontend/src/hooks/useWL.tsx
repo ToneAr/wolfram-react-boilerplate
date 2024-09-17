@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { io } from 'socket.io-client';
+import { Handler } from '../api';
 import {
 	createContext,
 	useCallback,
@@ -12,8 +11,9 @@ interface IuseWL {
 	isActive: boolean;
 	req: (endpoint: string, dataIn?: object, port?: number) => any;
 }
-function useWl(): IuseWL {
+function useWl(api?: Handler): IuseWL {
 	const [isActive, setIsActive] = useState<boolean>(false);
+
 	function handleWlCode(code) {
 		if (code === 0) {
 			console.log('WL Ready');
@@ -23,48 +23,50 @@ function useWl(): IuseWL {
 			throw new Error(`wolframscript returned code: ${code}`);
 		}
 	}
+
 	useEffect(() => {
-		if (window.api) {
-			if (window.api.env === 'electron') {
-				window.api.ipcRenderer.on('wl-status', handleWlCode);
-			} else if (window.api.env === 'web') {
-				const socket = io('localhost:3000');
-				socket.on('wl-status', handleWlCode);
-			}
+		if (api) {
+			api.ipc.on('wl-status', (code) => {
+				handleWlCode(code);
+				console.log('wl-status effect:', isActive);
+			});
 		}
-	});
+	}, [api]);
 
 	async function req(
 		endpoint: string,
 		dataIn: object = {},
 		port: number = 4848,
-	): Promise<any> {
-		try {
-			const response = await axios.post(endpoint, null, {
-				baseURL: `http://localhost:${port}`,
-				params: dataIn,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-				},
+	): Promise<unknown> {
+		if (api) {
+			return new Promise((resolve, reject) => {
+				try {
+					api.ipc.send('req', [endpoint, dataIn, port]);
+
+					api.ipc.once('req', (res) => {
+						console.log('Received response:', res);
+						resolve(res);
+					});
+				} catch (error) {
+					reject(error);
+				}
 			});
-			return response.data;
-		} catch (error) {
-			console.log(error);
-			return null;
 		}
 	}
 
 	const aliveQ = useCallback(async () => {
 		const res = await req('aliveQ', {}, 8888);
+		console.log('aliveQ res:', res);
 		if (res === 'True') {
 			setIsActive(true);
 		} else {
 			setIsActive(false);
 		}
-	}, [setIsActive]);
+	}, [isActive, setIsActive]);
 
 	useEffect(() => {
 		aliveQ();
+		console.log(`isActive after aliveQ: ${isActive}`);
 	}, [aliveQ, isActive]);
 
 	return {
@@ -78,8 +80,14 @@ const WLContext = createContext<IuseWL>({
 	req: async () => {},
 });
 
-function WLProvider({ children }: { children: React.ReactNode }) {
-	const wl = useWl();
+function WLProvider({
+	api,
+	children,
+}: {
+	api?: Handler;
+	children: React.ReactNode;
+}) {
+	const wl = useWl(api);
 	return <WLContext.Provider value={wl}>{children}</WLContext.Provider>;
 }
 

@@ -5,13 +5,14 @@
  */
 
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog, IpcMainEvent } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import nodeChildProcess from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import * as os from 'os';
+import axios from 'axios';
 
 class AppUpdater {
 	constructor() {
@@ -122,6 +123,28 @@ ipcMain.on('ipc-example', async (event, arg) => {
 let wlProc: nodeChildProcess.ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
 
+ipcMain.on(
+	'req',
+	async function (
+		event: IpcMainEvent,
+		[endpoint, dataIn, port]: [string, object, number],
+	) {
+		try {
+			const response = await axios.post(endpoint, null, {
+				baseURL: `http://127.0.0.1:${port}`,
+				params: dataIn,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			});
+			event.reply(response.data);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			return;
+		}
+	},
+);
 function checkWL(): boolean {
 	try {
 		nodeChildProcess.execSync('wolframscript -version');

@@ -1,14 +1,18 @@
 import { spawn, execSync, ChildProcessWithoutNullStreams } from 'child_process';
 import { Server } from 'socket.io';
+import axios from 'axios';
 import os from 'os';
 
 export class WLManager {
-	private wlProc: ChildProcessWithoutNullStreams | null = null;
-	private isQuitting = false;
-	private io: Server;
+	wlProc: ChildProcessWithoutNullStreams | null = null;
+	isQuitting = false;
+	io: Server;
 
 	constructor(io: Server) {
 		this.io = io;
+		this.startWL = this.startWL.bind(this);
+		this.cleanupWL = this.cleanupWL.bind(this);
+		this.req = this.req.bind(this);
 	}
 
 	checkWL(): boolean {
@@ -22,7 +26,10 @@ export class WLManager {
 	}
 
 	startWL(): void {
-		if (this.wlProc) return;
+		if (this.wlProc) {
+			this.io.emit('wl-status', 0);
+			return;
+		}
 
 		this.wlProc = spawn(
 			'wolframscript',
@@ -41,7 +48,13 @@ export class WLManager {
 		console.log(`WL pid: ${this.wlProc.pid}`);
 
 		this.wlProc.stdout.on('data', (data) => {
-			const dataStr = data.toString().trim();
+			const dataStr = data
+				.toString()
+				.trim()
+				.replace(/\\n/g, '\n')
+				.replace(/\\t/g, '\t')
+				.replace(/\\"/g, '"')
+				.replace(/\\\\/g, '\\');
 			console.log(`WL stdout: ${dataStr}`);
 			if (dataStr === `"Type 'exit' to end process:"`) {
 				this.io.emit('wl-status', 0);
@@ -80,6 +93,23 @@ export class WLManager {
 				);
 			}
 			this.wlProc = null;
+		}
+	}
+
+	async req(endpoint: string, dataIn: object = {}, port: number = 4848) {
+		try {
+			const response = await axios.post(endpoint, null, {
+				baseURL: `http://127.0.0.1:${port}`,
+				params: dataIn,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			});
+			this.io.emit('req', response.data);
+			return response.data;
+		} catch (error) {
+			console.log(error);
+			return;
 		}
 	}
 }
