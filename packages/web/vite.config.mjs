@@ -34,6 +34,8 @@ export default defineConfig({
 		outDir: './build',
 		sourcemap: true,
 		cssCodeSplit: false,
+		emptyOutDir: true,
+		manifest: true,
 	},
 	css: {
 		// This will ensure that CSS Modules generate type definitions
