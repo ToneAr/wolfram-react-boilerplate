@@ -20,8 +20,8 @@
 		"start:client": "vite",
 		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview\"",
 		"start:server": "ts-node ./src/main/server.ts",
-		"dev:client": "vite dev",
-		"dev:server": "nodemon",
+		"dev:client": "cross-env NODE_ENV=development vite dev",
+		"dev:server": "cross-env NODE_ENV=development nodemon",
 		"build": "yarn typecheck && vite build"
 	},
 	"dependencies": {

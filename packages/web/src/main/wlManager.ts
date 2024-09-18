@@ -7,9 +7,11 @@ export class WLManager {
 	wlProc: ChildProcessWithoutNullStreams | null = null;
 	isQuitting = false;
 	io: Socket;
+	base: string;
 
-	constructor(io: Socket) {
+	constructor(io: Socket, base: string) {
 		this.io = io;
+		this.base = base;
 		this.startWL = this.startWL.bind(this);
 		this.cleanupWL = this.cleanupWL.bind(this);
 		this.req = this.req.bind(this);
@@ -25,7 +27,7 @@ export class WLManager {
 		}
 	}
 
-	startWL(): void {
+	startWL(base: string = '127.0.0.1'): void {
 		if (this.wlProc) {
 			this.io.emit('wl-status', 0);
 			return;
@@ -39,6 +41,8 @@ export class WLManager {
 				'-rawterm',
 				'-script',
 				require.resolve('@wrb/wl'),
+				'-b',
+				base,
 			],
 			{
 				detached: true,
@@ -99,7 +103,7 @@ export class WLManager {
 	async req(endpoint: string, dataIn: object = {}, port: number = 4848) {
 		try {
 			const response = await axios.post(endpoint, null, {
-				baseURL: `http://127.0.0.1:${port}`,
+				baseURL: `http://${this.base}:${port}`,
 				params: dataIn,
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
