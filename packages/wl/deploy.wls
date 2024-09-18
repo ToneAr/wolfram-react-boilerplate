@@ -1,6 +1,7 @@
 #!/usr/bin/env wolframscript
 SetDirectory[ DirectoryName[$InputFileName] ];
 <<"bin/EchoTemporaryCLI.wxf";
+<<"bin/CommandLineParse.wxf";
 
 EchoTemporaryCLI[
 	Quiet[

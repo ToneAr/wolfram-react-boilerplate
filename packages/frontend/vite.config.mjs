@@ -16,6 +16,7 @@ export default defineConfig({
 			outDir: 'build',
 		}),
 	],
+	base: './',
 	build: {
 		lib: {
 			entry: 'src/index.tsx',

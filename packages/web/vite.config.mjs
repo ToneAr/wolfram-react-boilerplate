@@ -16,12 +16,8 @@ export default defineConfig({
 			outDir: 'build',
 		}),
 	],
+	base: './',
 	build: {
-		lib: {
-			entry: 'index.html',
-			formats: ['es', 'cjs'],
-			fileName: (format) => `index.${format}.js`,
-		},
 		rollupOptions: {
 			external: ['react', 'react-dom'],
 			output: {
