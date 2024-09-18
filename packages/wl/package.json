@@ -8,6 +8,6 @@
 	"main": "./deploy.wls",
 	"private": true,
 	"scripts": {
-		"start": "wolframscript -script ./deploy.wls"
+		"start": "math -script ./deploy.wls"
 	}
 }

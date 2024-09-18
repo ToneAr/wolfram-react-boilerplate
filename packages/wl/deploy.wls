@@ -9,7 +9,7 @@ EchoTemporaryCLI[
 		],
 		PacletInstall::samevers
 	];
-	<<LocalDeploy`;
+	<<TonyAristeidou`LocalDeploy`;
 	,
 	"Initialising LocalDeploy`..."
 ];
@@ -32,7 +32,17 @@ EchoTemporaryCLI[
 	"Distributing definitions..."
 ];
 
-Print[ "\n","---------------- LocalDeploy: "<>ToString[PacletObject["LocalDeploy"]["Version"]]<>" ---------------", "\n"];
+EchoTemporaryCLI[
+	base = CommandLineParse[{"--base", "-b"}] /. {
+		{Repeated[_?FailureQ, {2}], _} :> "localhost",
+		{OrderlessPatternSequence[_?FailureQ, {r_}]} :> r
+	}
+	,
+	"Parsing command line arguments..."
+];
+
+
+Print[ "\n","---------------- LocalDeploy: "<>ToString[PacletObject["TonyAristeidou/LocalDeploy"]["Version"]]<>" ---------------", "\n"];
 
 WaitAll[
 	Function[{
@@ -64,7 +74,8 @@ WaitAll[
 					,
 					LocalDeploy[
 						expr,
-						port
+						port,
+						"BaseURL"-> base
 					]//First
 				]
 			]

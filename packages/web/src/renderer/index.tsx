@@ -6,7 +6,7 @@ import React from 'react';
 
 import '@wrb/frontend/build/index.css';
 
-const socket = io('localhost:3000');
+const socket = io('.ipc');
 const webHandler = new WebHandler(socket);
 
 const container = document.getElementById('root') as HTMLElement;
