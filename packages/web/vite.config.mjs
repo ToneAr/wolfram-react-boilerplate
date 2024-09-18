@@ -10,12 +10,6 @@ export default defineConfig({
 		react(),
 		svgr({ svgrOptions: { icon: true } }),
 		postcss(),
-		dts({
-			include: ['src'],
-			exclude: ['node_modules', 'build'],
-			insertTypesEntry: true,
-			outDir: 'build',
-		}),
 		tsconfigPaths(),
 	],
 	base: './',
@@ -23,6 +17,8 @@ export default defineConfig({
 		rollupOptions: {
 			external: [],
 			output: {
+				entryFileNames: '[name].js',
+				chunkFileNames: '[name].js',
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name.endsWith('.css')) {
 						return 'index.css';
