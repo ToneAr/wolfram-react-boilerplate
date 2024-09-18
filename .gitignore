@@ -18,7 +18,8 @@ node_modules
 # OSX
 .DS_Store
 
-out/
+out
+build
 .misc/dll
 
 .idea

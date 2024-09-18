@@ -3,10 +3,18 @@ import { Frontend } from '@wrb/frontend';
 import { io } from 'socket.io-client';
 import WebHandler from './WebHandler';
 import React from 'react';
+import packageJson from '../../package.json';
 
 import '@wrb/frontend/build/index.css';
 
-const socket = io('.ipc');
+const socket = io(
+	process.env.NODE_ENV === 'development'
+		? 'localhost:3000'
+		: packageJson.domain,
+	{
+		path: process.env.NODE_ENV === 'development' ? '/' : '/.ipc',
+	},
+);
 const webHandler = new WebHandler(socket);
 
 const container = document.getElementById('root') as HTMLElement;

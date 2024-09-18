@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import dts from 'vite-plugin-dts';
 import postcss from '@vituum/vite-plugin-postcss';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
 	plugins: [
@@ -15,16 +16,13 @@ export default defineConfig({
 			insertTypesEntry: true,
 			outDir: 'build',
 		}),
+		tsconfigPaths(),
 	],
 	base: './',
 	build: {
 		rollupOptions: {
-			external: ['react', 'react-dom'],
+			external: [],
 			output: {
-				globals: {
-					react: 'React',
-					'react-dom': 'ReactDOM',
-				},
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name.endsWith('.css')) {
 						return 'index.css';

@@ -8,6 +8,7 @@
 	"contributors": [],
 	"main": "build/index.html",
 	"source": "src/renderer/index.html",
+	"domain": "http://wreltech.wolfram.com",
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
@@ -17,6 +18,7 @@
 		"start": "concurrently \"yarn start:server\" \"yarn start:client\"",
 		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"start:client": "vite",
+		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview\"",
 		"start:server": "ts-node ./src/main/server.ts",
 		"dev:client": "vite dev",
 		"dev:server": "nodemon",
@@ -30,9 +32,9 @@
 		"nodemon": "^3.1.4",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
-		"react-router-dom": "^6.26.2",
 		"socket.io": "^4.7.5",
-		"socket.io-client": "^4.7.5"
+		"socket.io-client": "^4.7.5",
+		"vite-tsconfig-paths": "^5.0.1"
 	},
 	"devDependencies": {
 		"eslint": "^9.10.0",
@@ -45,8 +47,6 @@
 		"@electron-toolkit/preload": "*",
 		"@electron-toolkit/tsconfig": "*",
 		"@electron-toolkit/utils": "*",
-		"@wrb/frontend": "*",
-		"@wrb/wl": "*",
 		"@eslint/eslintrc": "*",
 		"@eslint/js": "*",
 		"@testing-library/jest-dom": "*",
@@ -58,6 +58,8 @@
 		"@types/react-test-renderer": "*",
 		"@typescript-eslint/eslint-plugin": "*",
 		"@typescript-eslint/parser": "*",
+		"@wrb/frontend": "*",
+		"@wrb/wl": "*",
 		"eslint": "*",
 		"eslint-config-airbnb-base": "*",
 		"eslint-import-resolver-typescript": "*",
@@ -71,6 +73,9 @@
 		"globals": "*",
 		"jest": "*",
 		"prettier": "*",
+		"react": "*",
+		"react-dom": "*",
+		"react-router-dom": "*",
 		"ts-node": "*",
 		"tsx": "*"
 	},
