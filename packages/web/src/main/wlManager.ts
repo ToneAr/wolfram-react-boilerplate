@@ -34,7 +34,7 @@ export class WLManager {
 		}
 
 		this.wlProc = spawn(
-			'wolframscript',
+			'math',
 			[
 				'-noinit',
 				'-noprompt',
