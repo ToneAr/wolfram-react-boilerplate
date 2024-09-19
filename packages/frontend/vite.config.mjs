@@ -18,6 +18,7 @@ export default defineConfig({
 	],
 	base: './',
 	build: {
+		target: 'es2022',
 		lib: {
 			entry: 'src/index.tsx',
 			name: 'Frontend',

@@ -15,9 +15,9 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			external: [],
+			input: 'index.html',
 			output: {
-				entryFileNames: '[name].js',
-				chunkFileNames: '[name].js',
+				entryFileNames: 'index.js',
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name.endsWith('.css')) {
 						return 'index.css';
