@@ -8,7 +8,7 @@
 	"contributors": [],
 	"main": "build/index.html",
 	"source": "src/renderer/index.html",
-	"domain": "http://wreltech.wolfram.com",
+	"domain": "wreltech.wolfram.com",
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
