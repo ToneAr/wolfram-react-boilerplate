@@ -9,6 +9,7 @@ const base = process.env.NODE_ENV === 'development' ? '127.0.0.1' : domain;
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
+	path: '/',
 	cors: {
 		methods: ['GET', 'POST'],
 	},

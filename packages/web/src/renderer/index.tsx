@@ -10,7 +10,7 @@ import '@wrb/frontend/build/index.css';
 const socket = io(
 	process.env.NODE_ENV === 'development' ? 'localhost:3000' : `${domain}`,
 	{
-		path: process.env.NODE_ENV === 'development' ? '/socket.io' : '/.ipc',
+		path: process.env.NODE_ENV === 'development' ? '/' : '/.ipc/',
 	},
 );
 const webHandler = new WebHandler(socket);
