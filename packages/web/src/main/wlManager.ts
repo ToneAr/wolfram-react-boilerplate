@@ -42,7 +42,9 @@ export class WLManager {
 				'-script',
 				require.resolve('@wrb/wl'),
 				'-b',
-				this.base,
+				process.env.NODE_ENV !== 'development'
+					? '0.0.0.0'
+					: '127.0.0.1',
 			],
 			{
 				detached: true,
@@ -103,7 +105,7 @@ export class WLManager {
 	async req(endpoint: string, dataIn: object = {}, port: number = 4848) {
 		try {
 			const response = await axios.post(endpoint, null, {
-				baseURL: `http://${this.base}:${port}`,
+				baseURL: `http://127.0.0.1:${port}`,
 				params: dataIn,
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
