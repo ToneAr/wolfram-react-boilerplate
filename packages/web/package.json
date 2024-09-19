@@ -18,7 +18,7 @@
 		"start": "concurrently \"yarn start:server\" \"yarn start:client\"",
 		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"start:client": "vite",
-		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview\"",
+		"preview": "yarn build && concurrently \"yarn dev:server\" \"cross-env NODE_ENV=development vite preview\"",
 		"start:server": "ts-node ./src/main/server.ts",
 		"dev:client": "cross-env NODE_ENV=development vite dev",
 		"dev:server": "cross-env NODE_ENV=development nodemon",

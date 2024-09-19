@@ -147,7 +147,7 @@ ipcMain.on(
 	) {
 		try {
 			const response = await axios.post(endpoint, null, {
-				baseURL: `http://127.0.0.1:${port}`,
+				baseURL: `http://localhost:${port}`,
 				params: dataIn,
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -156,7 +156,7 @@ ipcMain.on(
 			event.reply('req', response.data);
 			return response.data;
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			return;
 		}
 	},

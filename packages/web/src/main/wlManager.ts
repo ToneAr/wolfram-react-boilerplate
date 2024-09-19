@@ -27,7 +27,7 @@ export class WLManager {
 		}
 	}
 
-	startWL(base: string = '127.0.0.1'): void {
+	startWL(): void {
 		if (this.wlProc) {
 			this.io.emit('wl-status', 0);
 			return;
@@ -42,7 +42,7 @@ export class WLManager {
 				'-script',
 				require.resolve('@wrb/wl'),
 				'-b',
-				base,
+				this.base,
 			],
 			{
 				detached: true,

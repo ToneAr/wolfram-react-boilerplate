@@ -37,7 +37,7 @@ export default [
 		settings: {
 			'import/resolver': {
 				node: {
-					extensions: ['.js', '.jsx', '.ts', '.tsx'],
+					extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.json'],
 					moduleDirectory: ['node_modules', 'src'],
 				},
 				typescript: {},

@@ -12,15 +12,18 @@ export default defineConfig({
 		tsconfigPaths(),
 
 		/* Workaround for missing MIME types from WAS
-		 * TODO: Defer is unsafe. Fix MIME types in WAS or switch to WWE
+		 * Defer is unsafe and also breaks in some environments.
+		 * TODO: Fix MIME types in WAS or switch to WWE
 		 */
 		{
 			name: 'html-transform',
 			transformIndexHtml(html) {
-				return html.replace(
-					/<script type="module"/g,
-					'<script defer="defer"',
-				);
+				return process.env.NODE_ENV !== 'development'
+					? html.replace(
+							/<script type="module"/g,
+							'<script defer="defer"',
+					  )
+					: html;
 			},
 		},
 	],

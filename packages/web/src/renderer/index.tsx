@@ -8,11 +8,9 @@ import { domain } from '../../package.json';
 import '@wrb/frontend/build/index.css';
 
 const socket = io(
-	process.env.NODE_ENV === 'development'
-		? 'localhost:3000'
-		: `${domain}:3000`,
+	process.env.NODE_ENV === 'development' ? 'localhost:3000' : `${domain}`,
 	{
-		path: process.env.NODE_ENV === 'development' ? '' : '/.ipc',
+		path: process.env.NODE_ENV === 'development' ? '/socket.io' : '/.ipc',
 	},
 );
 const webHandler = new WebHandler(socket);

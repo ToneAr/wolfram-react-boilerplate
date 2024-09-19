@@ -44,8 +44,8 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
 	console.log(`
-  \x1b[1;31mWRB Web Server \x1b[0;31mv${version}\x1b[0m
+  \x1b[1;31mWRB IPC Server \x1b[0;31mv${version}\x1b[0m
 
-  \x1b[0;31m➜\x1b[0m  \x1b[1;39mServer\x1b[0m: \x1b[0;36mhttp://localhost:\x1b[1;36m${PORT}\x1b[0;36m/\x1b[0;39m
+  \x1b[0;31m➜\x1b[0m  \x1b[1;39mServer\x1b[0m: \x1b[0;36mhttp://${base}:\x1b[1;36m${PORT}\x1b[0;36m/\x1b[0;39m
 `);
 });

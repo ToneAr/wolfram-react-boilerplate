@@ -30,7 +30,7 @@ SetDirectory[ DirectoryName[$InputFileName] ];
 
 	EchoTemporaryCLI[
 		base = CommandLineParse[{"--base", "-b"}] /. {
-			{Repeated[{_?FailureQ}, {2}], _} :> "localhost",
+			{Repeated[_?FailureQ, {2}]} :> "localhost",
 			{OrderlessPatternSequence[_?FailureQ, {r_}]} :> ToString[r]
 		}
 		,
