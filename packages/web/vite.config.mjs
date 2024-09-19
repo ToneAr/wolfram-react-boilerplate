@@ -10,6 +10,19 @@ export default defineConfig({
 		svgr({ svgrOptions: { icon: true } }),
 		postcss(),
 		tsconfigPaths(),
+
+		/* Workaround for missing MIME types from WAS
+		 * TODO: Defer is unsafe. Fix MIME types in WAS or switch to WWE
+		 */
+		{
+			name: 'html-transform',
+			transformIndexHtml(html) {
+				return html.replace(
+					/<script type="module"/g,
+					'<script defer="defer"',
+				);
+			},
+		},
 	],
 	base: './',
 	build: {
@@ -17,12 +30,13 @@ export default defineConfig({
 			external: [],
 			input: 'index.html',
 			output: {
-				entryFileNames: 'index.js',
+				entryFileNames: 'assets/[name].[hash].js',
+				chunkFileNames: 'assets/[name].[hash].js',
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name.endsWith('.css')) {
-						return 'index.css';
+						return 'assets/[name].[hash].css';
 					}
-					return assetInfo.name;
+					return 'assets/[name].[hash][extname]';
 				},
 			},
 		},
