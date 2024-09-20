@@ -18,28 +18,26 @@
 		"start": "concurrently \"yarn start:server\" \"yarn start:client\"",
 		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"start:client": "vite",
-		"preview": "yarn build && concurrently \"yarn dev:server\" \"cross-env NODE_ENV=development vite preview\"",
+		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview --mode development\"",
 		"start:server": "ts-node ./src/main/server.ts",
 		"dev:client": "cross-env NODE_ENV=development vite dev",
 		"dev:server": "cross-env NODE_ENV=development nodemon",
 		"build": "yarn typecheck && vite build"
 	},
 	"dependencies": {
-		"@types/express": "^4.17.21",
-		"@types/socket.io": "^3.0.2",
-		"@types/socket.io-client": "^3.0.0",
 		"express": "^4.21.0",
 		"nodemon": "^3.1.4",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
+		"react": "*",
+		"react-dom": "*",
 		"socket.io": "^4.7.5",
 		"socket.io-client": "^4.7.5",
 		"vite-tsconfig-paths": "^5.0.1"
 	},
 	"devDependencies": {
-		"eslint": "^9.10.0",
-		"prettier": "^3.3.3",
-		"vite": "^5.4.5"
+		"vite": "^5.4.5",
+		"@types/express": "^4.17.21",
+		"@types/socket.io": "^3.0.2",
+		"@types/socket.io-client": "^3.0.0"
 	},
 	"peerDependencies": {
 		"@electron-toolkit/eslint-config-prettier": "*",

@@ -5,33 +5,18 @@ import postcss from '@vituum/vite-plugin-postcss';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-	plugins: [
-		react(),
-		svgr({ svgrOptions: { icon: true } }),
-		postcss(),
-		tsconfigPaths(),
-
-		/* Workaround for missing MIME types from WAS
-		 * Defer is unsafe and also breaks in some environments.
-		 * TODO: Fix MIME types in WAS or switch to WWE
-		 */
-		{
-			name: 'html-transform',
-			transformIndexHtml(html) {
-				return process.env.NODE_ENV !== 'development'
-					? html.replace(
-							/<script type="module"/g,
-							'<script defer="defer"',
-					  )
-					: html;
-			},
-		},
-	],
 	base: './',
 	build: {
+		outDir: './build',
+		target: 'es2022',
+		sourcemap: true,
+		cssCodeSplit: false,
+		emptyOutDir: true,
+		manifest: true,
 		rollupOptions: {
 			external: [],
 			input: 'index.html',
+			outDir: './build',
 			output: {
 				entryFileNames: 'assets/[name].[hash].js',
 				chunkFileNames: 'assets/[name].[hash].js',
@@ -43,13 +28,36 @@ export default defineConfig({
 				},
 			},
 		},
-		outDir: './build',
-		target: 'es2022',
-		sourcemap: true,
-		cssCodeSplit: false,
-		emptyOutDir: true,
-		manifest: true,
 	},
+	resolve: {
+		alias: {
+			react: 'react',
+			'react-dom': 'react-dom',
+		},
+	},
+	plugins: [
+		react(),
+		svgr({ svgrOptions: { icon: true } }),
+		postcss(),
+		tsconfigPaths(),
+		{
+			/*******************************************************
+			 * Workaround for missing MIME types from WAS
+			 * Defer is unsafe and also breaks in some environments.
+			 * TODO: Fix MIME types in WAS or switch to WWE
+			 *******************************************************
+			 */
+			name: 'html-transform',
+			transformIndexHtml(html) {
+				return process.env.NODE_ENV !== 'development'
+					? html.replace(
+							/<script type="module"/g,
+							'<script defer="defer"',
+						)
+					: html;
+			},
+		},
+	],
 	css: {
 		// This will ensure that CSS Modules generate type definitions
 		modules: {

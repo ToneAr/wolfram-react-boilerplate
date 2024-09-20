@@ -3,5 +3,5 @@
 	"compilerOptions": {
 		"baseUrl": "."
 	},
-	"include": ["src/**/*", "scripts/**/*"]
+	"include": ["src"]
 }

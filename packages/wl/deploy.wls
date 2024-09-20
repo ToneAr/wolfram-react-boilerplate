@@ -73,11 +73,11 @@ SetDirectory[ DirectoryName[$InputFileName] ];
 							}
 						]
 						,
-						Echo[LocalDeploy[
+						LocalDeploy[
 							expr,
 							port,
 							"BaseURL"-> base
-						]]//First
+						]//First
 					]
 				]
 			]
