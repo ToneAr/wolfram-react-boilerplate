@@ -51,12 +51,12 @@ export class WLManager {
 			},
 		);
 
-		console.log(`WL pid: ${this.wlProc.pid}`);
+		console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${this.wlProc.pid}`);
 
 		this.wlProc.stdout.on('data', (data) => {
-			let dataStr = data.toString().trim();
-
-			dataStr = dataStr
+			const dataStr = data
+				.toString()
+				.trim()
 				.replace(/\\n/g, '\n')
 				.replace(/\\t/g, '\t')
 				.replace(/\\\\"/g, '')
@@ -73,7 +73,7 @@ export class WLManager {
 		});
 
 		this.wlProc.stderr.on('data', (err) => {
-			console.log(`\x1b[0;31mWL error\x1b[0m ${err}`);
+			console.log(`WL[\x1b[0;31merror\x1b[0m]: ${err}`);
 		});
 
 		this.wlProc.on('exit', (code) => {
@@ -81,7 +81,7 @@ export class WLManager {
 			if (!this.isQuitting) {
 				console.log(`WL exit code: ${code}`);
 				console.error(
-					'\x1b[0;31merror\x1b[0m wolframscript has quit unexpectedly.',
+					'WL[\x1b[0;31merror\x1b[0m]: wolframscript has quit unexpectedly.',
 					'Will attempt to restart the process.',
 				);
 				this.io.emit('wl-status', code);
@@ -103,7 +103,7 @@ export class WLManager {
 				);
 			} catch (error) {
 				console.error(
-					'\x1b[0;31merror\x1b[0m Terminating Wolfram Language process:',
+					'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',
 					error,
 				);
 			}
