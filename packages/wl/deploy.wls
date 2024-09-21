@@ -37,7 +37,7 @@ EchoTemporaryCLI[
 	"\033[2mParsing command line arguments...\033[22m"
 ];
 
-messages = {"\n","\033[1;31m  ➜  LocalDeploy: \033[0;31m"<>ToString[PacletObject["TonyAristeidou/LocalDeploy"]["Version"]]<>"\033[0m", "\n\n"};
+messages = {"\n\n\033[1;31m  ➜  LocalDeploy: \033[0;31mv"<>ToString[PacletObject["TonyAristeidou/LocalDeploy"]["Version"]]<>"\033[0m", "\n\n"};
 {isFailure, failures} = {False, {}};
 
 EchoTemporaryCLI[
@@ -64,9 +64,10 @@ enc = Quiet[
 						AppendTo[messages,
 							StringJoin @
 							Append["\n"]@KeyValueMap[{propName, prop}|->
-								{"\t",Which[
+								{Which[
 									propName=="Endpoints",
 										{
+											"  ",
 											"\033[1m",
 											"Endpoints:",
 											"\033[0m"
@@ -74,7 +75,7 @@ enc = Quiet[
 											"\n",
 											Sequence @@ KeyValueMap[{endpoint, iconizedExpr}|->
 												{
-													"\t",
+													"    ",
 													"\033[0;36m",
 													ToString[endpoint],": ",
 													"\033[0m"
@@ -90,6 +91,7 @@ enc = Quiet[
 									,
 									MatchQ[propName, "Port"|"LocalIPAddress"],
 										{
+											"  ",
 											"\033[1m",
 											propName,": ",
 											"\033[0m"
@@ -101,6 +103,7 @@ enc = Quiet[
 										},
 									MatchQ[propName, "BaseURL"],
 										{
+											"  ",
 											"\033[1m",
 											propName,": ",
 											"\033[0m"
@@ -155,7 +158,7 @@ Print @@ messages;
 
 Pause[0.1];
 
-Print[ "Type '\033[1mexit\033[0m' to end process:" ];
+Print["Type 'exit' to end process:" ];
 While[
 	!MatchQ[ToString[Input[]], "exit"],
 	Null
