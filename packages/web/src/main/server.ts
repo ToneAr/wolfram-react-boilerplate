@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import { WLManager } from './wlManager';
 import { version, domain } from '../../package.json';
 
+global.isActive = global.isActive ?? false;
 const base = process.env.NODE_ENV === 'development' ? '127.0.0.1' : domain;
 
 const app = express();
@@ -15,13 +16,11 @@ const io = new Server(server, {
 	},
 });
 
-// if (!wlManager.checkWL()) {
-// 	console.error('wolframscript not found. Please install it and try again.');
-// 	process.exit(1);
-// }
-
 io.on('connection', (socket) => {
-	console.log('[+]Connected users:', io.sockets.sockets.size);
+	console.log(
+		'Connected users\x1b[1;32m[+]\x1b[0;39m:',
+		io.sockets.sockets.size,
+	);
 
 	// Create client's WLManager instance
 	const wlManager = new WLManager(socket, base);
@@ -29,14 +28,21 @@ io.on('connection', (socket) => {
 	// -------- Add event listeners --------
 	socket.on('start-wl', wlManager.startWL);
 
-	socket.on('req', (args: [string, object, number]) =>
-		wlManager.req(...args),
-	);
+	socket.on('req', (args: [string, object, number]) => {
+		wlManager
+			.req(...args)
+			.then((res) =>
+				console.log('WL[Request]:', { from: socket.id, args, res }),
+			);
+	});
 
 	socket.on('stop-wl', wlManager.cleanupWL);
 
 	socket.on('disconnect', () => {
-		console.log('[-]Connected users:', io.sockets.sockets.size);
+		console.log(
+			'Connected users\x1b[1;31m[-]\x1b[0;39m:',
+			io.sockets.sockets.size,
+		);
 		if (io.sockets.sockets.size < 1) wlManager.cleanupWL();
 	});
 	// -------------------------------------

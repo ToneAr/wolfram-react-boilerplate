@@ -5,7 +5,7 @@ import os from 'os';
 
 export class WLManager {
 	wlProc: ChildProcessWithoutNullStreams | null = null;
-	isQuitting = false;
+	isQuitting: boolean = false;
 	io: Socket;
 	base: string;
 
@@ -28,7 +28,7 @@ export class WLManager {
 	}
 
 	startWL(): void {
-		if (this.wlProc) {
+		if (this.wlProc || global.isActive) {
 			this.io.emit('wl-status', 0);
 			return;
 		}
@@ -54,28 +54,35 @@ export class WLManager {
 		console.log(`WL pid: ${this.wlProc.pid}`);
 
 		this.wlProc.stdout.on('data', (data) => {
-			const dataStr = data
-				.toString()
-				.trim()
+			let dataStr = data.toString().trim();
+
+			dataStr = dataStr
 				.replace(/\\n/g, '\n')
 				.replace(/\\t/g, '\t')
-				.replace(/\\"/g, '"')
-				.replace(/\\\\/g, '\\');
-			console.log(`WL stdout: ${dataStr}`);
-			if (dataStr === `"Type 'exit' to end process:"`) {
+				.replace(/\\\\"/g, '')
+				.replace(/\\"/g, '')
+				.replace(/"/g, '')
+				.replace(/\\/g, '');
+
+			console.log('WL:', dataStr);
+			// TODO: There has to be a better way to handle this...
+			if (dataStr === `Type 'exit' to end process:`) {
+				global.isActive = true;
 				this.io.emit('wl-status', 0);
 			}
 		});
 
 		this.wlProc.stderr.on('data', (err) => {
-			console.log(`WL stderr: ${err}`);
+			console.log(`\x1b[0;31mWL error\x1b[0m ${err}`);
 		});
 
 		this.wlProc.on('exit', (code) => {
+			global.isActive = false;
 			if (!this.isQuitting) {
 				console.log(`WL exit code: ${code}`);
 				console.error(
-					'wolframscript has quit unexpectedly. Will attempt to restart the process.',
+					'\x1b[0;31merror\x1b[0m wolframscript has quit unexpectedly.',
+					'Will attempt to restart the process.',
 				);
 				this.io.emit('wl-status', code);
 				this.startWL();
@@ -85,7 +92,9 @@ export class WLManager {
 
 	cleanupWL(): void {
 		if (this.wlProc && this.wlProc.pid) {
-			console.log('Terminating Wolfram Language process');
+			console.log(
+				'\x1b[0;31mTerminating Wolfram Language process\x1b[0m',
+			);
 			this.isQuitting = true;
 			try {
 				process.kill(
@@ -94,10 +103,11 @@ export class WLManager {
 				);
 			} catch (error) {
 				console.error(
-					'Error terminating Wolfram Language process:',
+					'\x1b[0;31merror\x1b[0m Terminating Wolfram Language process:',
 					error,
 				);
 			}
+			global.isActive = false;
 			this.wlProc = null;
 		}
 	}
@@ -114,8 +124,7 @@ export class WLManager {
 			this.io.emit('req', response.data);
 			return response.data;
 		} catch (error) {
-			console.log(error);
-			return;
+			return error;
 		}
 	}
 }
