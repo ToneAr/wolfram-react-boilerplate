@@ -63,8 +63,11 @@ function useWl(): IuseWL {
 	}, [isActive, setIsActive]);
 
 	useEffect(() => {
-		aliveQ();
-		console.log(`isActive after aliveQ: ${isActive}`);
+		const interval = setInterval(() => {
+			aliveQ();
+		}, 15000);
+
+		return () => clearInterval(interval);
 	}, [aliveQ, isActive]);
 
 	return {
