@@ -12,17 +12,21 @@
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+
 		"typecheck:node": "tsc --noEmit -p ../../tsconfig.node.json --composite false",
 		"typecheck:web": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
 		"typecheck": "yarn typecheck:node && yarn typecheck:web",
+
 		"start": "concurrently \"yarn start:server\" \"yarn start:client\"",
-		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"start:client": "vite",
-		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview --mode development\"",
-		"start:server": "ts-node ./src/main/server.ts",
+		"start:server": "nodemon",
+
+		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"dev:client": "cross-env NODE_ENV=development vite dev",
 		"dev:server": "cross-env NODE_ENV=development nodemon",
-		"build": "yarn typecheck && vite build"
+
+		"build": "yarn typecheck && vite build",
+		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview\""
 	},
 	"dependencies": {
 		"express": "^4.21.0",
