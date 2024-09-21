@@ -1,45 +1,41 @@
-import { createRoot } from 'react-dom/client';
-import React from 'react';
-
-import { io } from 'socket.io-client';
-
 import Frontend from './App';
 import { useWL, WLProvider } from './hooks/useWL';
 export { Frontend, useWL, WLProvider };
 
-import WebHandler from '@wrb/web/src/renderer/WebHandler';
-
 /*
- * This is used to run the frontend in development mode and should not run in production.
+ * Below is used to run the frontend in development mode and should be commented out when building the app.
  */
-if (process.env.NODE_ENV === 'development') {
-	const socket = io(`localhost:3000`);
 
-	const webHandler = new WebHandler(socket);
+// import React from 'react';
+// import WebHandler from '@wrb/web/src/renderer/WebHandler';
+// import { createRoot } from 'react-dom/client';
+// import { io } from 'socket.io-client';
 
-	const container = document.getElementById('root') as HTMLElement;
-	const root = createRoot(container);
-	root.render(
-		<React.StrictMode>
-			<Frontend api={webHandler.api} />
-		</React.StrictMode>,
-	);
+// const socket = io(`localhost:3000`);
 
-	webHandler.api.ipc.on('connect', () => {
-		console.log('Connected to server');
-		webHandler.api.ipc.send('start-wl');
-	});
+// const webHandler = new WebHandler(socket);
 
-	webHandler.api.ipc.on('disconnect', () => {
-		console.log('Disconnected from server');
-	});
+// const container = document.getElementById('root') as HTMLElement;
+// const root = createRoot(container);
+// root.render(
+// 	<React.StrictMode>
+// 		<Frontend api={webHandler.api} />
+// 	</React.StrictMode>,
+// );
 
-	window.addEventListener('beforeunload', () => {
-		socket.disconnect();
-	});
+// webHandler.api.ipc.on('connect', () => {
+// 	console.log('Connected to server');
+// 	webHandler.api.ipc.send('start-wl');
+// });
 
-	// Debug
-	webHandler.api.ipc.on('wl-status', (code) => {
-		console.log('Wolfram Language status:', code);
-	});
-}
+// webHandler.api.ipc.on('disconnect', () => {
+// 	console.log('Disconnected from server');
+// });
+
+// window.addEventListener('beforeunload', () => {
+// 	socket.disconnect();
+// });
+
+// webHandler.api.ipc.on('wl-status', (code) => {
+// 	console.log('Wolfram Language status:', code);
+// });
