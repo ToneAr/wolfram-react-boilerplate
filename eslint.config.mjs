@@ -30,15 +30,13 @@ export default [
 			globals: {
 				...globals.node,
 			},
-
 			ecmaVersion: 2022,
 			sourceType: 'module',
 		},
 		settings: {
 			'import/resolver': {
 				node: {
-					extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.json'],
-					moduleDirectory: ['node_modules', 'src'],
+					moduleDirectory: ['**/node_modules/*', '**/src/*'],
 				},
 				typescript: {},
 			},
