@@ -13,8 +13,8 @@ import WebHandler from '@wrb/web/src/renderer/WebHandler';
  * This is used to run the frontend in development mode and should not run in production.
  */
 if (process.env.NODE_ENV === 'development') {
-	const port = process.env.PORT || 3000;
-	const socket = io(`localhost:${port}`);
+	const socket = io(`localhost:3000`);
+
 	const webHandler = new WebHandler(socket);
 
 	const container = document.getElementById('root') as HTMLElement;
