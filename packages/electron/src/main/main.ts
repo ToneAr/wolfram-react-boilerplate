@@ -139,28 +139,6 @@ ipcMain.on('ipc-example', async (event, arg) => {
 let wlProc: nodeChildProcess.ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
 
-ipcMain.on(
-	'req',
-	async function (
-		event: IpcMainEvent,
-		[endpoint, dataIn, port]: [string, object, number],
-	) {
-		try {
-			const response = await axios.post(endpoint, null, {
-				baseURL: `http://localhost:${port}`,
-				params: dataIn,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-				},
-			});
-			event.reply('req', response.data);
-			return response.data;
-		} catch (error) {
-			console.error(error);
-			return;
-		}
-	},
-);
 function checkWL(): boolean {
 	try {
 		nodeChildProcess.execSync('wolframscript -version');
@@ -186,28 +164,30 @@ function startWL(): void {
 			detached: true,
 		},
 	);
-
-	console.log(`WL pid: ${wlProc.pid}`);
-
+	console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${wlProc.pid}`);
 	wlProc.stdout.on('data', (data) => {
 		const dataStr = data
 			.toString()
 			.trim()
 			.replace(/\\n/g, '\n')
 			.replace(/\\t/g, '\t')
-			.replace(/\\"/g, '"')
-			.replace(/\\\\/g, '\\');
-		console.log(`WL stdout: ${dataStr}`);
-		if (dataStr === `"Type 'exit' to end process:"`) {
+			.replace(/\\\\"/g, '')
+			.replace(/\\"/g, '')
+			.replace(/"/g, '')
+			.replace(/\\/g, '');
+
+		console.log(`WL: ${dataStr}`);
+
+		if (dataStr === `Type 'exit' to end process:`) {
 			mainWindow?.webContents.send('wl-status', 0);
 		}
 	});
 	wlProc.stderr.on('data', (err) => {
-		console.log(`WL stderr: ${err}`);
+		console.log(`WL[\x1b[0;31merror\x1b[0m]: ${err}`);
 	});
 	wlProc.on('exit', (code) => {
 		if (!isQuitting) {
-			console.log(`WL exit code: ${code}`);
+			console.log(`WL[exit]: ${code}`);
 			dialog.showErrorBox(
 				'wolframscript has quit unexpectedly',
 				'Will attempt to restart the process.',
@@ -219,24 +199,39 @@ function startWL(): void {
 }
 function cleanupWL(): void {
 	if (wlProc && wlProc.pid) {
-		console.log('Terminating Wolfram Language process');
+		console.log('\x1b[0;31mTerminating Wolfram Language process\x1b[0m');
 		isQuitting = true;
 		try {
-			// treeKill(wlProc.pid, 'SIGKILL', (err) => {
-			// 	console.error(
-			// 		'Error terminating Wolfram Language process tree:',
-			// 		err,
-			// 	);
-			// });
 			process.kill(
 				// Make PID negative if on Unix systems to close entire process group
 				wlProc.pid * (os.platform() === 'win32' ? 1 : -1),
 				'SIGKILL',
 			);
 		} catch (error) {
-			console.error('Error terminating Wolfram Language process:', error);
+			console.error(
+				'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',
+				error,
+			);
 		}
 		wlProc = null;
+	}
+}
+async function req(
+	event: IpcMainEvent,
+	[endpoint, dataIn, port]: [string, object, number],
+) {
+	try {
+		const response = await axios.post(endpoint, null, {
+			baseURL: `http://localhost:${port}`,
+			params: dataIn,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		});
+		event.reply('req', response.data);
+		return response.data;
+	} catch (error) {
+		return error;
 	}
 }
 
@@ -248,6 +243,14 @@ if (!checkWL()) {
 	app.exit(1);
 }
 ipcMain.on('start-wl', startWL);
+ipcMain.on('req', (event, args) => {
+	req(event, args).then((res) => {
+		console.log('Request:', {
+			args,
+			res,
+		});
+	});
+});
 app.on('will-quit', () => {
 	cleanupWL();
 });
