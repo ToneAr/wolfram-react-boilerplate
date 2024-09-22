@@ -63,7 +63,6 @@
 		"@typescript-eslint/eslint-plugin": "*",
 		"@typescript-eslint/parser": "*",
 		"eslint": "*",
-		"eslint-config-airbnb-base": "*",
 		"eslint-import-resolver-typescript": "*",
 		"eslint-plugin-compat": "*",
 		"eslint-plugin-import": "*",
