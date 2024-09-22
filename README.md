@@ -1,5 +1,5 @@
 <p style="text-align: center;">
-	<img src="./packages/frontend/assets/banner.svg" alt="isolated" width="400"/>
+	<img src="./packages/frontend/assets/banner.png" alt="isolated" width="400"/>
 </p>
 
 # The Wolfram React Boilerplate (WRB)
