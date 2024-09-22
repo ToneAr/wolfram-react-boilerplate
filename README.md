@@ -1,9 +1,14 @@
-# The Wolfram React Boilerplate
-The Wolfram React Boilerplate (WRB) is a monorepo allowing the development of cross-platform applications intended to be deployed to both web 	and desktop based deployments sharing a single frontend. It deploys desktop apps using electron-vite and web apps using vite, both of which make use of local Wolfram Language sockets deployed using [LocalDeploy](https://github.com/ToneAr/LocalDeploy).
+<p style="text-align: center;">
+	<img src="./packages/frontend/assets/banner.svg" alt="isolated" width="400"/>
+</p>
+
+# The Wolfram React Boilerplate (WRB)
+
+The Wolfram React Boilerplate, shortened to WRB, is a boilerplate repository allowing the development of cross-platform applications intended to be deployed to both web and desktop sharing a common frontend. It separates each part into a distinct package which is then managed using [yarn workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/). It deploys desktop apps using (electron-vite)[https://electron-vite.org/] and builds web apps using [vite](https://vitejs.dev/), both of which make use of local Wolfram Language sockets deployed using [LocalDeploy](https://github.com/ToneAr/LocalDeploy) as a back end in conjunction with a node.JS inter-process communication or IPC API.
 
 ## The IPC API
-Both deployment methods expose an IPC API for frontend and backend communication. This boilerplate aims to abstract these from the front end developer such that regardless of deployment environment, the IPC API always contains the same methods and variables. So, the front end developer can call on the IPC by using the `useIPC()` hook like so:
-
+Both deployment methods expose an IPC API for frontend and backend communication. This boilerplate aims to abstract these from the frontend developer such that regardless of environment, the IPC API always contains the same methods and variables. So, the front end developer can call on the IPC by using the `useIPC()` hook like so:
+	
 ```js
 import { useIPC } from '@wrb/frontend/src/hooks/useIPC';
 
@@ -24,10 +29,10 @@ ipc.on('event', (data) => {
 ```
 
 ### Electron
-Electron's backend is the usual electron node main process using ipcMethods exposed on window.api before being passed to the frontend.
+Electron's backend is the electron's node.JS main process [exposed through window.api](./packages/electron/src/main/preload.ts) before being passed to the frontend. It uses `ipcMain` when inside the main process and `ipcRenderer` when inside the renderer. These can send messages and set up event listeners on either side.
 
 ### Web
-Web's backend is an express server making use of socket-io websockets for communication with the frontend and is exposed as WebHandler class passed to the frontend.
+The web deployment's backend is an express server making use of socket-io websockets for communication with the frontend and is exposed as [WebHandler](./packages/web/src/renderer/WebHandler.ts) class passed to the frontend.
 
 
 ### IPC API properties
@@ -73,19 +78,21 @@ Inside `@wrb/wl/` are all the files used for the definitions and deployment of t
 
 	```wl
 	{
-		{ port1_Integer, expr1_ },
-		{ port2_Integer, expr2_ },
-		...
+		{ port_Integer, expr1_ }..
 	}
 	```
 
-	Each expression will be deployed as a listener on the corresponding port, each being deployed using a different parallel kernel (up to the number your core count allows). This allows the ability to asynchronously make request to the different ports.
+	Each expression will be deployed as a listener on the corresponding port, each being deployed using a different parallel kernel workers (up to the number your core count allows).
 
 2. **deploy.wls**
 
 	This script file will install and initialize the LocalDeploy and then deploy the expressions defined inside `expressions.wl`.
 
-## Global scripts
+## Yarn scripts
+This project uses `yarn` as its package manager.
+Using `npm install` and any `npm` scripts should be avoided.
+
+Setup `yarn` globally on your machine by using `npm i -g yarn`.
 
 | Script 						| Alternatives 					| Description 										|
 | --- 							| --- 							| ---		 										|
@@ -94,30 +101,20 @@ Inside `@wrb/wl/` are all the files used for the definitions and deployment of t
 | `yarn build:{alt}` 			| `web \| electron \| frontend` | Compile and build package files 					|
 | `yarn build:electron:{alt}` 	| `win \| mac \| linux` 		| Build electron application distributable for given platform |
 
-## Linting
-
-ESLint and Prettier are both enabled which are linters that flag errors, improper syntax, suspicious constructs and stylistic errors.
+To run a script from a workspace you can use the following command:
+`yarn workspace [packageName] [command]`
 
 ## Initial setup checklist
+1. Edit all `package.json` files.
+   1. Set project scope, name, repository locatioon, author info, etc. and description
+   2. Change the scope name of the packages imported in the `peerDependencies` in `web` and `electron`.
+   3. Set the domain in `packages/frontend/package.json`.
 
-This section outlines a checklist of all steps needed to set up a new project using this template.
-
-<!-- 1. Configure `package.json`
-	1. Set `"description"`
-	2. Set `"repository"`
-	3. Set `"author"`
-	4. Configure `"build"`
-		1. Set `"productName"`
-		2. Set `"extraMetadata:{ "version" }"`
-		3. Set `"appId"`
-		4. Set `"publish"`
-2. Configure `index.html`
-	1. Configure your apllication title
-3. Configure your app's icons inside `assets/`
-4. Define your Wolfram Language APIs
-	1. Add any additional endpoints and expressions to `expressions.wl`
-	2. Test using `wolframscript -script ./wl/expressions.wl`
-5. Build your application -->
+## Notes
+* Both the electron and web deployment use the assets located within `frontend` package.
+* The document title for all deployments is set within `packages/frontend/src/App.tsx`.
+* When developing the electron or web dev environments, the static files of frontend are being used so frontend needs to be built using `yarn build:frontend` to apply the changes
+  * For hot-reloading of the frontend, use `yarn dev:frontend`.
 
 ## Notable resources used in development
 The resources listed in this section were invaluable in the development of this project:

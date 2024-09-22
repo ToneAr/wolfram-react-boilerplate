@@ -1,8 +1,8 @@
 {
 	"name": "@wrb/frontend",
-	"version": "0.9.0",
-	"description": "Electron + React + TS + WL",
-	"repository": "git+https://github.com/ToneAr/electron-react-wl-boilerplate",
+	"version": "1.0.0",
+	"description": "WRB Sub-package: Frontend",
+	"repository": "git+https://github.com/ToneAr/wolfram-react-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
 	"main": "build/index.cjs.js",
 	"module": "build/index.es.js",
@@ -22,10 +22,7 @@
 		"@mui/material": "^6.1.0",
 		"@types/react-router-dom": "^5.3.3",
 		"@vitejs/plugin-react": "^4.3.1",
-		"axios": "^1.7.7",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
-		"react-router-dom": "^6.26.2"
+		"axios": "^1.7.7"
 	},
 	"devDependencies": {
 		"@rollup/plugin-babel": "^6.0.4",
@@ -45,7 +42,9 @@
 		"vite-plugin-svgr": "^4.2.0"
 	},
 	"peerDependancies": {
-		"@wrb/hooks": "*",
+		"react": "*",
+		"react-dom": "*",
+		"react-router-dom": "*",
 		"typescript": "*",
 		"@electron-toolkit/eslint-config-prettier": "*",
 		"@electron-toolkit/eslint-config-ts": "*",

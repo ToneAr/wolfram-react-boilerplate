@@ -1,14 +1,14 @@
 {
 	"name": "@wrb/electron",
-	"version": "0.9.0",
-	"description": "Electron + React + TS + WL",
-	"repository": "git+https://github.com/ToneAr/electron-react-wl-boilerplate",
+	"version": "1.0.0",
+	"description": "WRB Sub-package: Electron",
+	"repository": "git+https://github.com/ToneAr/wolfram-react-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
 	"main": "out/app/src/main/main.js",
 	"private": true,
 	"scripts": {
 		"format": "prettier --write .",
-		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+		"lint": "eslint . --fix",
 
 		"typecheck:node": "tsc --noEmit -p ../../tsconfig.node.json --composite false",
 		"typecheck:web": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
@@ -25,11 +25,11 @@
 		"build:linux": "electron-vite build && electron-builder --linux"
 	},
 	"build": {
-		"productName": "Electron + React + WL",
+		"productName": "WRB Example Project",
 		"extraMetadata": {
-			"version": "2.0.0"
+			"version": "1.0.0"
 		},
-		"appId": "ElectronWLReact",
+		"appId": "WRBExampleProject",
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",
 		"files": [
@@ -37,7 +37,7 @@
 			"package.json",
 			"out/app"
 		],
-		"afterSign": "scripts/notarize.js",
+		"afterSign": ".osx/notarize.js",
 		"mac": {
 			"target": {
 				"target": "default",
@@ -115,7 +115,10 @@
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"typescript": "^5.6.0",
-		"vite-plugin-svgr": "^4.2.0"
+		"vite-plugin-svgr": "^4.2.0",
+
+		"@wrb/wl": "*",
+		"@wrb/frontend": "*"
 	},
 	"devDependencies": {
 		"@electron/notarize": "^2.1.0",
@@ -131,42 +134,7 @@
 		"electron-vite": "^2.3.0",
 		"electronmon": "^2.0.2",
 		"file-loader": "^6.2.0",
-		"identity-obj-proxy": "^3.0.0",
-		"ts-node": "^10.9.2"
-	},
-	"peerDependancies": {
-		"@wrb/wl": "*",
-		"@wrb/frontend": "*",
-		"@electron-toolkit/eslint-config-prettier": "*",
-		"@electron-toolkit/eslint-config-ts": "*",
-		"@electron-toolkit/preload": "*",
-		"@electron-toolkit/tsconfig": "*",
-		"@electron-toolkit/utils": "*",
-		"@eslint/eslintrc": "*",
-		"@eslint/js": "*",
-		"@testing-library/jest-dom": "*",
-		"@testing-library/react": "*",
-		"@types/jest": "*",
-		"@types/node": "*",
-		"@types/react": "*",
-		"@types/react-dom": "*",
-		"@types/react-test-renderer": "*",
-		"@typescript-eslint/eslint-plugin": "*",
-		"@typescript-eslint/parser": "*",
-		"eslint": "*",
-		"eslint-config-airbnb-base": "*",
-		"eslint-import-resolver-typescript": "*",
-		"eslint-plugin-compat": "*",
-		"eslint-plugin-import": "*",
-		"eslint-plugin-jest": "*",
-		"eslint-plugin-jsx-a11y": "*",
-		"eslint-plugin-promise": "*",
-		"eslint-plugin-react": "*",
-		"eslint-plugin-react-hooks": "*",
-		"globals": "*",
-		"jest": "*",
-		"prettier": "*",
-		"tsx": "*"
+		"identity-obj-proxy": "^3.0.0"
 	},
 	"license": "MIT"
 }

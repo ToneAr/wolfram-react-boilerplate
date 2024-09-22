@@ -1,5 +1,5 @@
 import { Box, LinearProgress, Stack } from '@mui/material';
-import Spikey from '../../../assets/spikey.svg?react';
+import Spikey from '../../../assets/icon.svg?react';
 
 export default function LoadingScreen() {
 	return (
