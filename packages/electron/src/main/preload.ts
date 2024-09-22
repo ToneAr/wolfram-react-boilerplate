@@ -3,8 +3,6 @@ export type Channels = string;
 
 const electronHandler = {
 	env: 'electron',
-	changeZoom: (we: { deltaY: number; ctrlKey: boolean }) =>
-		ipcRenderer.invoke('change-zoom-level', we),
 	ipc: {
 		send(channel: Channels, ...args: unknown[]) {
 			ipcRenderer.send(channel, ...args);

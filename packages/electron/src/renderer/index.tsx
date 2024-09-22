@@ -24,7 +24,7 @@ window.addEventListener(
 			ctrlKey: event.ctrlKey,
 			deltaY: event.deltaY,
 		};
-		window.api.changeZoom(eventData);
+		window.api.ipc.send('change-zoom-level', eventData);
 	},
 );
 

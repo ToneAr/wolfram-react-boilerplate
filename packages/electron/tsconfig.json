@@ -1,7 +1,11 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"baseUrl": "."
+		"baseUrl": ".",
+		"module": "ES2020",
+		"paths": {
+			"*": ["node_modules/*"]
+		},
 	},
 	"include": ["src"]
 }

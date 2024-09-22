@@ -42,11 +42,10 @@ export default defineConfig({
 		tsconfigPaths(),
 		{
 			/*******************************************************
-			 * Workaround for missing MIME types from WAS
+			 * Workaround for missing MIME types from WAS.
 			 * Defer is unsafe and also breaks in some environments.
 			 * TODO: Fix MIME types in WAS or switch to WWE
-			 *******************************************************
-			 */
+			 ******************************************************/
 			name: 'html-transform',
 			transformIndexHtml(html) {
 				return process.env.NODE_ENV !== 'development'
@@ -59,7 +58,7 @@ export default defineConfig({
 		},
 	],
 	css: {
-		// This will ensure that CSS Modules generate type definitions
+		// This ensures CSS Modules generate type definitions
 		modules: {
 			generateScopedName: '[name]__[local]___[hash:base64:5]',
 		},

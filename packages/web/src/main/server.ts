@@ -1,10 +1,10 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { WLManager } from './wlManager';
+import WLManager from './wlManager';
 import { version, domain } from '../../package.json';
 
-global.isActive = global.isActive ?? false;
+global.isWlActive = global.isWlActive ?? false;
 const base = process.env.NODE_ENV === 'development' ? '127.0.0.1' : domain;
 
 const app = express();
@@ -25,7 +25,9 @@ io.on('connection', (socket) => {
 	// Create client's WLManager instance
 	const wlManager = new WLManager(socket, base);
 
-	// -------- Add event listeners --------
+	/*****************************************
+	 ******** Socket Event listeners *********
+	 *****************************************/
 	socket.on('start-wl', wlManager.startWL);
 
 	socket.on('req', (args: [string, object, number]) => {
@@ -43,9 +45,10 @@ io.on('connection', (socket) => {
 			'Connected users\x1b[1;31m[-]\x1b[0;39m:',
 			io.sockets.sockets.size,
 		);
+		// Cleanup WL process if no clients
 		if (io.sockets.sockets.size < 1) wlManager.cleanupWL();
 	});
-	// -------------------------------------
+	/*****************************************/
 });
 
 const PORT = process.env.PORT || 3000;

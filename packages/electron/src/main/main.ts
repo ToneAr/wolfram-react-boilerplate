@@ -4,6 +4,9 @@
  * through IPC.
  */
 
+/*****************************************
+ **************** Imports ****************
+ *****************************************/
 import path from 'path';
 import {
 	app,
@@ -18,10 +21,13 @@ import log from 'electron-log';
 import nodeChildProcess from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import * as os from 'os';
-import fs from 'fs';
+import os from 'os';
 import axios from 'axios';
+/*****************************************/
 
+/*****************************************
+ *********** Auto Update Setup ***********
+ *****************************************/
 class AppUpdater {
 	constructor() {
 		log.transports.file.level = 'info';
@@ -29,14 +35,11 @@ class AppUpdater {
 		autoUpdater.checkForUpdatesAndNotify();
 	}
 }
+/*****************************************/
 
-let mainWindow: BrowserWindow | null = null;
-
-if (process.env.NODE_ENV === 'production') {
-	const sourceMapSupport = require('source-map-support');
-	sourceMapSupport.install();
-}
-
+/*****************************************
+ *********** Developer Tools *************
+ *****************************************/
 const isDebug =
 	process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
@@ -56,6 +59,17 @@ const installExtensions = async () => {
 		)
 		.catch(console.log);
 };
+/*****************************************/
+
+/*****************************************
+ *********** Main Window Setup ***********
+ *****************************************/
+let mainWindow: BrowserWindow | null = null;
+
+if (process.env.NODE_ENV === 'production') {
+	const sourceMapSupport = require('source-map-support');
+	sourceMapSupport.install();
+}
 
 const createWindow = async () => {
 	if (isDebug) {
@@ -72,14 +86,6 @@ const createWindow = async () => {
 		return path.join(RESOURCES_PATH, ...paths);
 	};
 
-	const iconPath = getAssetPath('icon.png');
-	console.log('path::', iconPath);
-	if (!fs.existsSync(iconPath)) {
-		console.error('Icon file does not exist:', iconPath);
-	} else {
-		console.log('Icon file exists:', iconPath);
-	}
-
 	mainWindow = new BrowserWindow({
 		show: false,
 		width: 1024,
@@ -94,7 +100,6 @@ const createWindow = async () => {
 		},
 	});
 
-	// mainWindow.setResizable(true);
 	mainWindow.loadURL(resolveHtmlPath('index.html'));
 
 	mainWindow.on('ready-to-show', () => {
@@ -124,18 +129,11 @@ const createWindow = async () => {
 	// Remove this if your app does not use auto updates
 	new AppUpdater();
 };
+/*****************************************/
 
-/**
- * Add event listeners...
- */
-
-ipcMain.on('ipc-example', async (event, arg) => {
-	const msgTemplate = (pingPong: string): string => `IPC test: ${pingPong}`;
-	console.log(msgTemplate(arg));
-	event.reply('ipc-example', msgTemplate('pong'));
-});
-
-// ----- Wolfram Language -----
+/*****************************************
+ *********** Wolfram Language ************
+ *****************************************/
 let wlProc: nodeChildProcess.ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
 const wlCmd = process.platform === 'linux' ? 'math' : 'wolframscript';
@@ -243,7 +241,14 @@ if (!checkWL()) {
 	);
 	app.exit(1);
 }
+
+/*****************************************/
+
+/*****************************************
+ ********** IPC Event listeners **********
+ *****************************************/
 ipcMain.on('start-wl', startWL);
+
 ipcMain.on('req', (event, args) => {
 	req(event, args).then((res) => {
 		console.log('Request:', {
@@ -252,13 +257,8 @@ ipcMain.on('req', (event, args) => {
 		});
 	});
 });
-app.on('will-quit', () => {
-	cleanupWL();
-});
-// -------------------------
 
-// ----- Window Zoom ------
-ipcMain.handle(
+ipcMain.on(
 	'change-zoom-level',
 	(_event, we: { deltaY: number; ctrlKey: boolean }) => {
 		if (we.ctrlKey) {
@@ -270,24 +270,47 @@ ipcMain.handle(
 		}
 	},
 );
-// ------------------------
 
+ipcMain.on('ipc-example', async (event, arg) => {
+	const msgTemplate = (pingPong: string): string => `IPC test: ${pingPong}`;
+	console.log(msgTemplate(arg));
+	event.reply('ipc-example', msgTemplate('pong'));
+});
+/*****************************************/
+
+/*****************************************
+ ********** App Event listeners **********
+ *****************************************/
 app.on('window-all-closed', () => {
-	// Respect the OSX convention of having the application in memory even
-	// after all windows have been closed
+	/*
+	 * Respect the OSX convention of having the application in memory even
+	 * after all windows have been closed
+	 */
 	if (process.platform !== 'darwin') {
 		cleanupWL();
 		app.quit();
 	}
 });
+
+// app.on('will-quit', () => {
+// 	wl.cleanupWL();
+// });
+/*****************************************/
+
+/*****************************************
+ ********** App Initialization ***********
+ *****************************************/
 app.whenReady()
 	.then(() => {
 		isQuitting = false;
 		createWindow();
 		app.on('activate', () => {
-			// On macOS it's common to re-create a window in the app when the
-			// dock icon is clicked and there are no other windows open.
+			/*
+			 * On macOS it's common to re-create a window in the app when the
+			 * dock icon is clicked and there are no other windows open.
+			 */
 			if (mainWindow === null) createWindow();
 		});
 	})
 	.catch(console.log);
+/*****************************************/

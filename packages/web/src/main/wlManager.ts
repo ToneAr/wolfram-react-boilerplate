@@ -3,11 +3,12 @@ import { Socket } from 'socket.io';
 import axios from 'axios';
 import os from 'os';
 
-export class WLManager {
+export default class WLManager {
 	wlProc: ChildProcessWithoutNullStreams | null = null;
 	isQuitting: boolean = false;
 	io: Socket;
 	base: string;
+	wlCmd: string = process.platform === 'linux' ? 'math' : 'wolframscript';
 
 	constructor(io: Socket, base: string) {
 		this.io = io;
@@ -19,7 +20,7 @@ export class WLManager {
 
 	checkWL(): boolean {
 		try {
-			execSync('wolframscript -version');
+			execSync(`${this.wlCmd} -version`);
 			return true;
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		} catch (error) {
@@ -28,13 +29,13 @@ export class WLManager {
 	}
 
 	startWL(): void {
-		if (this.wlProc || global.isActive) {
+		if (this.wlProc || global.isWlActive) {
 			this.io.emit('wl-status', 0);
 			return;
 		}
 
 		this.wlProc = spawn(
-			'math',
+			this.wlCmd,
 			[
 				'-noinit',
 				'-noprompt',
@@ -67,7 +68,7 @@ export class WLManager {
 			console.log('WL:', dataStr);
 			// TODO: There has to be a better way to handle this...
 			if (dataStr === `Type 'exit' to end process:`) {
-				global.isActive = true;
+				global.isWlActive = true;
 				this.io.emit('wl-status', 0);
 			}
 		});
@@ -77,11 +78,11 @@ export class WLManager {
 		});
 
 		this.wlProc.on('exit', (code) => {
-			global.isActive = false;
+			global.isWlActive = false;
 			if (!this.isQuitting) {
 				console.log(`WL exit code: ${code}`);
 				console.error(
-					'WL[\x1b[0;31merror\x1b[0m]: wolframscript has quit unexpectedly.',
+					'WL[\x1b[0;31merror\x1b[0m]: The Wolfram kernel has quit unexpectedly.',
 					'Will attempt to restart the process.',
 				);
 				this.io.emit('wl-status', code);
@@ -107,7 +108,7 @@ export class WLManager {
 					error,
 				);
 			}
-			global.isActive = false;
+			global.isWlActive = false;
 			this.wlProc = null;
 		}
 	}
