@@ -25,10 +25,10 @@ class WebHandler {
 		this.socket.once(channel, func);
 	}
 
-	constructor(socket: Socket) {
+	constructor(socket: Socket, mode: string = 'web') {
 		this.socket = socket;
 		this.api = {
-			env: 'web',
+			env: mode,
 			ipc: {
 				on: this.on.bind(this),
 				send: this.send.bind(this),

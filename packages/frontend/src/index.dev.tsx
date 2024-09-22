@@ -9,7 +9,7 @@ import Frontend from './App';
 
 const socket = io(`localhost:3000`);
 
-const webHandler = new WebHandler(socket);
+const webHandler = new WebHandler(socket, 'dev');
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
