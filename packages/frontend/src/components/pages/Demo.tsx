@@ -10,6 +10,7 @@ import {
 	Paper,
 	MenuItem,
 } from '@mui/material';
+import Banner from '../../../assets/banner.png';
 import { useWL } from '../../hooks/useWL';
 import '../../css/App.css';
 
@@ -61,8 +62,10 @@ export default function Demo() {
 			sx={{ textAlign: 'center', alignContent: 'center' }}
 			justifyContent="center"
 		>
-			<Typography variant="h2">
-				Electron + ReactTS + WolframLanguage
+			<img src={Banner} alt="Banner" width={500} />
+			<Typography variant="h4">
+				Build cross-platform applications with <br />
+				computational superpowers
 			</Typography>
 			<Stack spacing={2} direction="row">
 				<TextField

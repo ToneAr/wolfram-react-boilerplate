@@ -105,12 +105,13 @@ To run a script from a workspace you can use the following command:
 `yarn workspace [packageName] [command]`
 
 ## Initial setup checklist
-1. Edit all `package.json` files.
-   1. Set project scope, name, repository locatioon, author info, etc. and description
+1. Edit **all** `package.json` files.
+   1. Set project scope, name, repository location, author info, etc. and description
    2. Change the scope name of the packages imported in the `peerDependencies` in `web` and `electron`.
    3. Set the domain in `packages/frontend/package.json`.
 
 ## Notes
+* WolframScript needs to installed and activated with a valid license on the client's machine for electron deployments and on the host server when deploying on the web.
 * Both the electron and web deployment use the assets located within `frontend` package.
 * The document title for all deployments is set within `packages/frontend/src/App.tsx`.
 * When developing the electron or web dev environments, the static files of frontend are being used so frontend needs to be built using `yarn build:frontend` to apply the changes
