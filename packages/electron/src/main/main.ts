@@ -138,10 +138,11 @@ ipcMain.on('ipc-example', async (event, arg) => {
 // ----- Wolfram Language -----
 let wlProc: nodeChildProcess.ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
+const wlCmd = process.platform === 'linux' ? 'math' : 'wolframscript';
 
 function checkWL(): boolean {
 	try {
-		nodeChildProcess.execSync('wolframscript -version');
+		nodeChildProcess.execSync(`${wlCmd} -version`);
 		return true;
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (error) {
@@ -152,7 +153,7 @@ function startWL(): void {
 	if (isQuitting) return;
 
 	wlProc = nodeChildProcess.spawn(
-		'wolframscript',
+		wlCmd,
 		[
 			'-noinit',
 			'-noprompt',
@@ -189,8 +190,8 @@ function startWL(): void {
 		if (!isQuitting) {
 			console.log(`WL[exit]: ${code}`);
 			dialog.showErrorBox(
-				'wolframscript has quit unexpectedly',
-				'Will attempt to restart the process.',
+				'The Wolfram kernel has quit unexpectedly',
+				'Will attempt to restart.',
 			);
 			mainWindow?.webContents.send('wl-status', code);
 			startWL();
@@ -237,7 +238,7 @@ async function req(
 
 if (!checkWL()) {
 	dialog.showErrorBox(
-		'wolframscript not found',
+		`${wlCmd} not found`,
 		'Please install it and try again.',
 	);
 	app.exit(1);

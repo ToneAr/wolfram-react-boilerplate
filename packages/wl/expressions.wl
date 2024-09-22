@@ -3,13 +3,14 @@
 	you want to deploy in the following form:
 
 		{
-			{ port, expr, name },
+			{ port, expr },
 			...
 		}
 
-	expr: can be anything supported by GenerateHTTPResponse.
-	port: is given as an integer.
-	name: String short of expression. Will be used as endpoint room in WAS.
+	expr: Can be anything supported by GenerateHTTPResponse.
+	port: Given as an integer.
+
+	Each port is using a separate Kernel worker.
 *)
 
 {
@@ -20,18 +21,17 @@
 		4848,
 		URLDispatcher[{
 			"/evaluate"~~EndOfString ->
-			APIFunction[{"in"->"String"},
-				ToExpression[#in]&
-			]
+				APIFunction[{"in"->"String"},
+					ToExpression[#in]&
+				]
 			,
 			("/evaluate-"~~evaluator:("Python"|"NodeJS"|"Shell")) :>
-			APIFunction[{"in"->"String"},
-				ExternalEvaluate[evaluator,
-					#in
-				]&
-			]
-		}],
-		"Demo"
+				APIFunction[{"in"->"String"},
+					ExternalEvaluate[evaluator,
+						#in
+					]&
+				]
+		}]
 	}
 	,
 	{
@@ -42,7 +42,6 @@
 		8888,
 		URLDispatcher[{
 			"/aliveQ" -> APIFunction[{}, True &]
-		}],
-		""
+		}]
 	}
 }
