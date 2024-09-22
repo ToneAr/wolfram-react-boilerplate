@@ -5,7 +5,7 @@ import React from 'react';
 import WebHandler from '@wrb/web/src/renderer/WebHandler';
 import { createRoot } from 'react-dom/client';
 import { io } from 'socket.io-client';
-import Frontend from './App';
+import { Frontend } from './App';
 
 const socket = io(`localhost:3000`);
 

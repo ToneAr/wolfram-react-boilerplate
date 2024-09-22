@@ -39,7 +39,7 @@ function AppContent() {
 	);
 }
 
-export default function Frontend({ api }: { api: Handler }) {
+export function Frontend({ api }: { api: Handler }) {
 	useEffect(() => {
 		document.title = 'WRB: Example Project';
 	});
