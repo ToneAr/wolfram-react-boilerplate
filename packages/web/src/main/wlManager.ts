@@ -1,10 +1,9 @@
-import { spawn, execSync, ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import { Socket, Server } from 'socket.io';
 import axios from 'axios';
 import os from 'os';
 
 export default class WLManager {
-	wlProc: ChildProcessWithoutNullStreams | null = null;
 	isQuitting: boolean = false;
 	socket: Socket;
 	server: Server;
@@ -45,12 +44,12 @@ export default class WLManager {
 	}
 
 	startWL(): void {
-		if (this.aliveQ()) {
+		if (global.wlProc && this.aliveQ()) {
 			this.socket.emit('wl-status', 0);
 			return;
 		}
 
-		this.wlProc = spawn(
+		global.wlProc = spawn(
 			this.wlCmd,
 			[
 				'-noinit',
@@ -68,9 +67,9 @@ export default class WLManager {
 			},
 		);
 
-		console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${this.wlProc.pid}`);
+		console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${global.wlProc.pid}`);
 
-		this.wlProc.stdout.on('data', (data) => {
+		global.wlProc.stdout.on('data', (data) => {
 			const dataStr = data
 				.toString()
 				.trim()
@@ -88,11 +87,11 @@ export default class WLManager {
 			}
 		});
 
-		this.wlProc.stderr.on('data', (err) => {
+		global.wlProc.stderr.on('data', (err) => {
 			console.log(`WL[\x1b[0;31merror\x1b[0m]: ${err}`);
 		});
 
-		this.wlProc.on('exit', (code) => {
+		global.wlProc.on('exit', (code) => {
 			if (!this.isQuitting) {
 				console.log(`WL exit code: ${code}`);
 				console.error(
@@ -107,7 +106,9 @@ export default class WLManager {
 
 	cleanupWL(): void {
 		if (this.server.sockets.sockets.size < 1 && this.aliveQ()) {
-			const wait = 2; // In minutes
+			const wait/* in minutes */ = process.env.NODE_ENV === 'development'
+				? 1
+				: 5;
 			console.log(
 				`\x1b[0;33mScheduled termination of Wolfram Language process in ${wait} minute(s)\x1b[0m`,
 			);
@@ -118,10 +119,10 @@ export default class WLManager {
 					console.log(
 						'\x1b[0;31mTerminating Wolfram Language process\x1b[0m',
 					);
-					if (this.wlProc && this.wlProc.pid) {
+					if (global.wlProc && global.wlProc.pid) {
 						try {
 							process.kill(
-								this.wlProc.pid *
+								global.wlProc.pid *
 									(os.platform() === 'win32' ? 1 : -1),
 								'SIGKILL',
 							);
@@ -132,7 +133,7 @@ export default class WLManager {
 							);
 						}
 					}
-					this.wlProc = null;
+					global.wlProc = null;
 				},
 				wait * 60 * 1000,
 			);
