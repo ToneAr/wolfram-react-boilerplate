@@ -9,7 +9,6 @@ export default defineConfig({
 	build: {
 		outDir: './build',
 		target: 'es2022',
-		sourcemap: true,
 		cssCodeSplit: false,
 		emptyOutDir: true,
 		manifest: true,
