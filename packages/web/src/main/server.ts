@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
 	);
 
 	// Create client's WLManager instance
-	const wlManager = new WLManager(socket, base);
+	const wlManager = new WLManager(socket, io, base);
 
 	/*****************************************
 	 ******** Socket Event listeners *********

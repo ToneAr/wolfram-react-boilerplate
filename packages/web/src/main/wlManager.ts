@@ -1,17 +1,19 @@
 import { spawn, execSync, ChildProcessWithoutNullStreams } from 'child_process';
-import { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import axios from 'axios';
 import os from 'os';
 
 export default class WLManager {
 	wlProc: ChildProcessWithoutNullStreams | null = null;
 	isQuitting: boolean = false;
-	io: Socket;
+	socket: Socket;
+	server: Server;
 	base: string;
 	wlCmd: string = process.platform === 'linux' ? 'math' : 'wolframscript';
 
-	constructor(io: Socket, base: string) {
-		this.io = io;
+	constructor(socket: Socket, server: Server, base: string) {
+		this.socket = socket;
+		this.server = server;
 		this.base = base;
 		this.startWL = this.startWL.bind(this);
 		this.cleanupWL = this.cleanupWL.bind(this);
@@ -30,7 +32,7 @@ export default class WLManager {
 
 	startWL(): void {
 		if (this.wlProc || global.isWlActive) {
-			this.io.emit('wl-status', 0);
+			this.socket.emit('wl-status', 0);
 			return;
 		}
 
@@ -69,7 +71,7 @@ export default class WLManager {
 			// TODO: There has to be a better way to handle this...
 			if (dataStr === `Type 'exit' to end process:`) {
 				global.isWlActive = true;
-				this.io.emit('wl-status', 0);
+				this.socket.emit('wl-status', 0);
 			}
 		});
 
@@ -85,31 +87,52 @@ export default class WLManager {
 					'WL[\x1b[0;31merror\x1b[0m]: The Wolfram kernel has quit unexpectedly.',
 					'Will attempt to restart the process.',
 				);
-				this.io.emit('wl-status', code);
+				this.socket.emit('wl-status', code);
 				this.startWL();
 			}
 		});
 	}
 
 	cleanupWL(): void {
-		if (this.wlProc && this.wlProc.pid) {
+		if (this.server.sockets.sockets.size < 1 && global.isWlActive) {
+			const wait = 2.5; // In minutes
 			console.log(
-				'\x1b[0;31mTerminating Wolfram Language process\x1b[0m',
+				`\x1b[0;33mScheduled termination of Wolfram Language process in ${wait} minute(s)\x1b[0m`,
 			);
 			this.isQuitting = true;
-			try {
-				process.kill(
-					this.wlProc.pid * (os.platform() === 'win32' ? 1 : -1),
-					'SIGKILL',
+
+			const cleanupTimeout = setTimeout(
+				() => {
+					console.log(
+						'\x1b[0;31mTerminating Wolfram Language process\x1b[0m',
+					);
+					if (this.wlProc && this.wlProc.pid) {
+						try {
+							process.kill(
+								this.wlProc.pid *
+									(os.platform() === 'win32' ? 1 : -1),
+								'SIGKILL',
+							);
+						} catch (error) {
+							console.error(
+								'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',
+								error,
+							);
+						}
+					}
+					global.isWlActive = false;
+					this.wlProc = null;
+				},
+				wait * 60 * 1000,
+			);
+
+			this.server.once('connection', () => {
+				console.log(
+					'\x1b[0;33mNew connection detected, cancelling scheduled termination\x1b[0m',
 				);
-			} catch (error) {
-				console.error(
-					'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',
-					error,
-				);
-			}
-			global.isWlActive = false;
-			this.wlProc = null;
+				clearTimeout(cleanupTimeout);
+				this.isQuitting = false;
+			});
 		}
 	}
 
@@ -122,7 +145,7 @@ export default class WLManager {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			});
-			this.io.emit('req', response.data);
+			this.socket.emit('req', response.data);
 			return response.data;
 		} catch (error) {
 			return error;
