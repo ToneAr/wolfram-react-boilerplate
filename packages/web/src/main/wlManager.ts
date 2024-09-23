@@ -30,8 +30,22 @@ export default class WLManager {
 		}
 	}
 
+	aliveQ(): boolean {
+		try {
+			const result = execSync(
+				'curl -s --max-time 2 http://localhost:8888/aliveQ',
+			)
+				.toString()
+				.trim();
+			return result === 'true';
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		} catch (e) {
+			return false;
+		}
+	}
+
 	startWL(): void {
-		if (this.wlProc || global.isWlActive) {
+		if (this.aliveQ()) {
 			this.socket.emit('wl-status', 0);
 			return;
 		}
@@ -70,7 +84,6 @@ export default class WLManager {
 			console.log('WL:', dataStr);
 			// TODO: There has to be a better way to handle this...
 			if (dataStr === `Type 'exit' to end process:`) {
-				global.isWlActive = true;
 				this.socket.emit('wl-status', 0);
 			}
 		});
@@ -80,7 +93,6 @@ export default class WLManager {
 		});
 
 		this.wlProc.on('exit', (code) => {
-			global.isWlActive = false;
 			if (!this.isQuitting) {
 				console.log(`WL exit code: ${code}`);
 				console.error(
@@ -94,8 +106,8 @@ export default class WLManager {
 	}
 
 	cleanupWL(): void {
-		if (this.server.sockets.sockets.size < 1 && global.isWlActive) {
-			const wait = 2.5; // In minutes
+		if (this.server.sockets.sockets.size < 1 && this.aliveQ()) {
+			const wait = 2; // In minutes
 			console.log(
 				`\x1b[0;33mScheduled termination of Wolfram Language process in ${wait} minute(s)\x1b[0m`,
 			);
@@ -120,7 +132,6 @@ export default class WLManager {
 							);
 						}
 					}
-					global.isWlActive = false;
 					this.wlProc = null;
 				},
 				wait * 60 * 1000,
