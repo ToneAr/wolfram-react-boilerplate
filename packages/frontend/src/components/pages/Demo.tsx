@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import Banner from '../../../assets/banner.png';
 import { useWL } from '../../hooks/useWL';
-import '../../css/App.css';
 
 export default function Demo() {
 	const wl = useWL();
@@ -64,7 +63,7 @@ export default function Demo() {
 		>
 			<img src={Banner} alt="Banner" width={500} />
 			<Typography variant="h4">
-				Build cross-platform applications with <br />
+				Cross-platform applications with <br />
 				computational superpowers
 			</Typography>
 			<Stack spacing={2} direction="row">

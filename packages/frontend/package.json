@@ -4,18 +4,13 @@
 	"description": "WRB Sub-package: Frontend",
 	"repository": "git+https://github.com/ToneAr/wolfram-react-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
-	"main": "build/index.cjs.js",
-	"module": "build/index.es.js",
-	"types": "build/index.d.ts",
-	"source": "src/index.ts",
+	"main": "src/index.tsx",
 	"private": true,
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --fix",
 		"test": "jest",
-		"typecheck": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
-		"dev": "cross-env NODE_ENV=development concurrently \"yarn workspace @wrb/web start:server\" \"vite\"",
-		"build": "yarn typecheck && vite build"
+		"typecheck": "tsc --noEmit -p ../../tsconfig.web.json --composite false"
 	},
 	"jest": {
 		"moduleDirectories": [

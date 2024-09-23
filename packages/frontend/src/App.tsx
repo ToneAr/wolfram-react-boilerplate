@@ -9,7 +9,7 @@ import { WLProvider, useWL } from './hooks/useWL';
 import { IPCProvider } from './hooks/useIPC';
 
 // Styles
-import './css/App.css';
+import '../css/App.css';
 
 // Components
 import Demo from './components/pages/Demo';

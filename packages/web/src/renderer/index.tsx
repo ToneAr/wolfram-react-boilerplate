@@ -5,8 +5,6 @@ import WebHandler from './WebHandler';
 import React from 'react';
 import { domain } from '../../package.json';
 
-import '@wrb/frontend/build/index.css';
-
 const socket = io(
 	process.env.NODE_ENV === 'development' ? 'localhost:3000' : `${domain}`,
 	{

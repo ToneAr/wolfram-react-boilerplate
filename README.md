@@ -94,12 +94,13 @@ Using `npm install` and any `npm` scripts should be avoided.
 
 Setup `yarn` globally on your machine by using `npm i -g yarn`.
 
-| Script 						| Alternatives 					| Description 										|
-| --- 							| --- 							| ---		 										|
-| `yarn start:{alt}` 			| `web \| electron \| wl` 		| Starts a preview version of the application 		|
-| `yarn dev:{alt}` 				| `web \| electron \| frontend` | Starts a development server for the application 	|
-| `yarn build:{alt}` 			| `web \| electron \| frontend` | Compile and build package files 					|
-| `yarn build:electron:{alt}` 	| `win \| mac \| linux` 		| Build electron application distributable for given platform |
+| Script 				| Alternatives 				| Description 										|
+| --- 					| --- 						| ---		 										|
+| `yarn test` 			| -					 		| Runs front-end jest tests		 					|
+| `yarn start:{alt}` 	| `web \| electron \| wl` 	| Starts a preview version of the application 		|
+| `yarn dev:{alt}` 		| `web \| electron` 		| Starts a development server for the application 	|
+| `yarn build:{alt}` 	| `web \| electron` 		| Compile and build package files 					|
+| `yarn package:{alt}` 	| `win \| mac \| linux` 	| Build electron application distributable for given platform |
 
 To run a script from a workspace you can use the following command:
 `yarn workspace [packageName] [command]`
@@ -114,8 +115,6 @@ To run a script from a workspace you can use the following command:
 * WolframScript needs to installed and activated with a valid license on the client's machine for electron deployments and on the host server when deploying on the web.
 * Both the electron and web deployment use the assets located within `frontend` package.
 * The document title for all deployments is set within `packages/frontend/src/App.tsx`.
-* When developing the electron or web dev environments, the static files of frontend are being used so frontend needs to be built using `yarn build:frontend` to apply the changes
-  * For hot-reloading of the frontend, use `yarn dev:frontend`.
 
 ## Notable resources used in development
 The resources listed in this section were invaluable in the development of this project:
