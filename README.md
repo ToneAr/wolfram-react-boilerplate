@@ -22,7 +22,8 @@ ipc.once('message', (msg) => {
 	ipc.send('message', ['reply'])
 })
 
-// Event listener listening on channel 'event' assigning the response to a state variable
+// Event listener listening on channel 'event' assigning
+// the response to a state variable
 ipc.on('event', (data) => {
 	setData(data)
 })
@@ -62,9 +63,9 @@ const wl = useWL();
 
 if (wl.isActive) {
 	wl.req(
-		'endpoint',				// Endpoint						[Required]
-		{ param: 'value' },		// Query Object (Default: {}) 	[Optional]
-		4848					// Port (Default is 4848) 		[Optional]
+		'endpoint',			// Endpoint						[Required]
+		{ param: 'value' },	// Query Object (Default: {}) 	[Optional]
+		4848				// Port (Default is 4848) 		[Optional]
 	)
 }
 ```
@@ -100,11 +101,11 @@ Setup `yarn` globally on your machine by using `npm i -g yarn`.
 | `yarn start:{alt}` 	| `web \| electron \| wl` 	| Starts a preview version of the application 		|
 | `yarn dev:{alt}` 		| `web \| electron` 		| Starts a development server for the application 	|
 | `yarn build:{alt}` 	| `web \| electron` 		| Compile and build package files 					|
-| `yarn package:{alt}` 	| `win \| mac \| linux` 	| Build electron application distributable for given platform |
+| `yarn package:{alt}` 	| `win \| mac \| linux` 	| Package electron application distributable for given platform |
 
 To run a script from a workspace you can use the following command:
 ```sh
-yarn workspace packageName cmd
+yarn workspace @scope/name command
 ```
 
 ### Node modules & Dependencies
@@ -112,12 +113,12 @@ Dependencies are managed by the yarn workspace, being installed in the root node
 
 * To install an external package to be used by a package in the workspace:
 	```sh
-	yarn workspace @scope/name add externalPackageName
+	yarn workspace @scope/name add package
 	```
 
 * To install an external package to the root package:
 	```sh
-	yarn workspace add externalPackageName -W
+	yarn add package -W
 	```
 	* These can then be added to each package by adding `"packageName": "*"` inside the `package.json` dependencies for each corresponding sub-package
 
