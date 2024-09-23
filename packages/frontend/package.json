@@ -105,6 +105,5 @@
 		"globals": "*",
 		"prettier": "*",
 		"tsx": "*"
-	},
-	"license": "MIT"
+	}
 }

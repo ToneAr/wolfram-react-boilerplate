@@ -24,23 +24,23 @@ jobs:
               run: |
                 npm install -g yarn
 
-            - name: yarn install
+            - name: Yarn install
               run: |
                   yarn
 
-            - name: test frontend
+            - name: Test frontend
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   yarn test
 
-            - name: test build electron
+            - name: Test build electron
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   yarn build:electron
 
-            - name: test build web
+            - name: Test build web
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |

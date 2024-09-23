@@ -1,9 +1,10 @@
 {
 	"name": "@wrb/wrb",
-	"version": "2.0.0",
+	"version": "1.0.0",
 	"description": "A monorepo for deployment of cross platform applications to desktop using electron vite or to the web using web sockets",
 	"repository": "git+https://github.com/ToneAr/wolfram-react-boilerplate",
 	"author": "Antonis Aristeidou <tonya@wolfram.com>",
+	"license": "MIT",
 	"private": true,
 	"scripts": {
 		"format": "prettier --write .",
@@ -36,7 +37,6 @@
 			}
 		]
 	},
-	"license": "MIT",
 	"dependencies": {
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",

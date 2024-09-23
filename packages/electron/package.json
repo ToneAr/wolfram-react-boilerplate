@@ -129,6 +129,5 @@
 		"electronmon": "^2.0.2",
 		"file-loader": "^6.2.0",
 		"identity-obj-proxy": "^3.0.0"
-	},
-	"license": "MIT"
+	}
 }
