@@ -55,11 +55,7 @@ function useWl(): IuseWL {
 	const aliveQ = useCallback(async () => {
 		const res = await req('aliveQ', {}, 8888);
 		console.log('aliveQ res:', res);
-		if (res === 'True') {
-			setIsActive(true);
-		} else {
-			setIsActive(false);
-		}
+		setIsActive((res as boolean) ?? false);
 	}, [isActive, setIsActive]);
 
 	useEffect(() => {

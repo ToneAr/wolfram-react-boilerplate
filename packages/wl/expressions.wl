@@ -41,7 +41,7 @@
 		*)
 		8888,
 		URLDispatcher[{
-			"/aliveQ" -> APIFunction[{}, True &]
+			"/aliveQ" -> APIFunction[{}, True &, "RawJSON"]
 		}]
 	}
 }

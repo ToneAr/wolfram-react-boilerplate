@@ -53,96 +53,98 @@ EchoTemporaryCLI[
 	"\033[2mDistributing definitions...\033[22m"
 ];
 
-enc = WaitAll[
-	Function[{
-			port,
-			expr
-		},
-		ParallelSubmit[
-			Quiet[
-				(*
-					The KeyValueMap section generates the messages for each
-					LocalDeploymentObject which is deployed using the initial MapApply
-				*)
-				AppendTo[messages,
-					StringJoin @
-					Append["\n"]@KeyValueMap[{propName, prop}|->
-						{Which[
-							propName=="Endpoints",
-								{
-									"  ",
-									"\033[1m",
-									"Endpoints:",
-									"\033[0m"
-									,
-									"\n",
-									Sequence @@ KeyValueMap[{endpoint, iconizedExpr}|->
-										{
-											"    ",
-											"\033[0;36m",
-											ToString[endpoint],": ",
-											"\033[0m"
-											,
-											"\033[0;32m",
-											ToString[ Head@*First@iconizedExpr ],
-											"\033[0m",
-											"\n"
-										},
-										prop
-									]
-								}
-							,
-							MatchQ[propName, "Port"|"LocalIPAddress"],
-								{
-									"  ",
-									"\033[1m",
-									propName,": ",
-									"\033[0m"
-									,
-									"\033[0;36m",
-									ToString[prop],
-									"\033[0m",
-									"\n"
-								},
-							MatchQ[propName, "BaseURL"],
-								{
-									"  ",
-									"\033[1m",
-									propName,": ",
-									"\033[0m"
-									,
-									"\033[1;36m",
-									ToString[prop],
-									"\033[0m",
-									"\n"
-								},
-							True,
-								{
-								}
-						]}
-						,
-						With[{
-								(*
-									Deploy the expressions
-								*)
-								dep = LocalDeploy[
-									expr,
-									port,
-									"BaseURL"-> base
-								]
-							},
-							If[!MatchQ[dep, _LocalDeploymentObject],
-								isFailure = True;
-								AppendTo[failures, dep]
+enc = Quiet[
+	WaitAll[
+		Function[{
+				port,
+				expr
+			},
+			ParallelSubmit[
+				Quiet[
+					(*
+						The KeyValueMap section generates the messages for each
+						LocalDeploymentObject which is deployed using the initial MapApply
+					*)
+					AppendTo[messages,
+						StringJoin @
+						Append["\n"]@KeyValueMap[{propName, prop}|->
+							{Which[
+								propName=="Endpoints",
+									{
+										"  ",
+										"\033[1m",
+										"Endpoints:",
+										"\033[0m"
+										,
+										"\n",
+										Sequence @@ KeyValueMap[{endpoint, iconizedExpr}|->
+											{
+												"    ",
+												"\033[0;36m",
+												ToString[endpoint],": ",
+												"\033[0m"
+												,
+												"\033[0;32m",
+												ToString[ Head@*First@iconizedExpr ],
+												"\033[0m",
+												"\n"
+											},
+											prop
+										]
+									}
 								,
-								First @ dep
+								MatchQ[propName, "Port"|"LocalIPAddress"],
+									{
+										"  ",
+										"\033[1m",
+										propName,": ",
+										"\033[0m"
+										,
+										"\033[0;36m",
+										ToString[prop],
+										"\033[0m",
+										"\n"
+									},
+								MatchQ[propName, "BaseURL"],
+									{
+										"  ",
+										"\033[1m",
+										propName,": ",
+										"\033[0m"
+										,
+										"\033[1;36m",
+										ToString[prop],
+										"\033[0m",
+										"\n"
+									},
+								True,
+									{
+									}
+							]}
+							,
+							With[{
+									(*
+										Deploy the expressions
+									*)
+									dep = LocalDeploy[
+										expr,
+										port,
+										"BaseURL"-> base
+									]
+								},
+								If[!MatchQ[dep, _LocalDeploymentObject],
+									isFailure = True;
+									AppendTo[failures, dep]
+									,
+									First @ dep
+								]
 							]
 						]
 					]
 				]
 			]
-		]
-	] @@@ expressions
+		] @@@ expressions
+	]
 ];
 
 If[isFailure,

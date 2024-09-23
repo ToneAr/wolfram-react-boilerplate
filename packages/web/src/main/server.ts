@@ -4,7 +4,6 @@ import { Server } from 'socket.io';
 import WLManager from './wlManager';
 import { version, domain } from '../../package.json';
 
-global.isWlActive = global.isWlActive ?? false;
 const base = process.env.NODE_ENV === 'development' ? '127.0.0.1' : domain;
 
 const app = express();
@@ -23,7 +22,7 @@ io.on('connection', (socket) => {
 	);
 
 	// Create client's WLManager instance
-	const wlManager = new WLManager(socket, base);
+	const wlManager = new WLManager(socket, io, base);
 
 	/*****************************************
 	 ******** Socket Event listeners *********
