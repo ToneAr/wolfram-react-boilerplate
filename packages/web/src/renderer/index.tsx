@@ -4,6 +4,8 @@ import { io } from 'socket.io-client';
 import WebHandler from './WebHandler';
 import React from 'react';
 import { domain } from '../../package.json';
+import Favicon from 'react-favicon';
+import favicon from '@wrb/frontend/assets/icon.ico';
 
 const socket = io(
 	process.env.NODE_ENV === 'development' ? 'localhost:3000' : `${domain}`,
@@ -17,6 +19,7 @@ const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 root.render(
 	<React.StrictMode>
+		<Favicon url={favicon} iconSize={216} />
 		<Frontend api={webHandler.api} />
 	</React.StrictMode>,
 );
