@@ -7,8 +7,10 @@
 			...
 		}
 
-	expr: can be anything supported by GenerateHTTPResponse.
-	port: is given as an integer
+	expr: Can be anything supported by GenerateHTTPResponse.
+	port: Given as an integer.
+
+	Each port is using a separate Kernel worker.
 *)
 
 {
@@ -19,22 +21,22 @@
 		4848,
 		URLDispatcher[{
 			"/evaluate"~~EndOfString ->
-			APIFunction[{"in"->"String"},
-				ToExpression[#in]&
-			]
+				APIFunction[{"in"->"String"},
+					ToExpression[#in]&
+				]
 			,
 			("/evaluate-"~~evaluator:("Python"|"NodeJS"|"Shell")) :>
-			APIFunction[{"in"->"String"},
-				ExternalEvaluate[evaluator,
-					#in
-				]&
-			]
+				APIFunction[{"in"->"String"},
+					ExternalEvaluate[evaluator,
+						#in
+					]&
+				]
 		}]
 	}
 	,
 	{
 		(*
-			Hertbeat Endpoint
+			Heartbeat Endpoint
 			Use this for diagnostics
 		*)
 		8888,

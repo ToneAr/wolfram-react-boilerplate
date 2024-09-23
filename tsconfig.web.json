@@ -1,7 +1,7 @@
 {
 	"extends": "@electron-toolkit/tsconfig/tsconfig.web.json",
 	"include": [
-		"packages/erwb-frontend/**/*",
+		"packages/frontend/**/*",
 		"**/renderer/**/*"
 	],
 	"compilerOptions": {

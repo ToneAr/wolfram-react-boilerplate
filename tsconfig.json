@@ -1,7 +1,8 @@
 {
 	"compilerOptions": {
+		"composite": true,
 		"incremental": true,
-		"target": "ES2022",
+		"target": "ESNext",
 		"module": "CommonJS",
 		"lib": ["dom", "es2022"],
 		"jsx": "react-jsx",
@@ -16,11 +17,15 @@
 		"allowJs": true,
 		"noImplicitAny": false,
 		"noEmit": true,
-		"baseUrl": ".",
 		"paths": {
+			"*": ["./node_modules/*"],
 			"react": ["./node_modules/@types/react"],
-			"@erwb/*": ["packages/*/src"]
+			"react-dom": ["./node_modules/@types/react-dom"],
+			"@wrb/*": ["./packages/*/src"]
 		}
 	},
-	"include": ["*/**/src/**/*", "*/**/__tests__/**/*"]
+	"references": [
+		{ "path": "./tsconfig.node.json" },
+		{ "path": "./tsconfig.web.json" }
+	]
 }

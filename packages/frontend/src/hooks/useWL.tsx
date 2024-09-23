@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { io } from 'socket.io-client';
+import { Handler } from '../api';
+import { useIPC } from './useIPC';
 import {
 	createContext,
 	useCallback,
@@ -14,6 +14,8 @@ interface IuseWL {
 }
 function useWl(): IuseWL {
 	const [isActive, setIsActive] = useState<boolean>(false);
+	const [api] = useState<Handler>(useIPC());
+
 	function handleWlCode(code) {
 		if (code === 0) {
 			console.log('WL Ready');
@@ -23,48 +25,49 @@ function useWl(): IuseWL {
 			throw new Error(`wolframscript returned code: ${code}`);
 		}
 	}
+
 	useEffect(() => {
-		if (window.api) {
-			if (window.api.env === 'electron') {
-				window.api.ipcRenderer.on('wl-status', handleWlCode);
-			} else if (window.api.env === 'web') {
-				const socket = io('localhost:3000');
-				socket.on('wl-status', handleWlCode);
-			}
-		}
+		api.ipc.on('wl-status', (code) => {
+			handleWlCode(code);
+			console.log('wl-status effect:', isActive);
+		});
 	});
 
 	async function req(
 		endpoint: string,
 		dataIn: object = {},
 		port: number = 4848,
-	): Promise<any> {
-		try {
-			const response = await axios.post(endpoint, null, {
-				baseURL: `http://localhost:${port}`,
-				params: dataIn,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-				},
-			});
-			return response.data;
-		} catch (error) {
-			console.log(error);
-			return null;
-		}
+	): Promise<unknown> {
+		return new Promise((resolve, reject) => {
+			try {
+				api.ipc.send('req', [endpoint, dataIn, port]);
+
+				api.ipc.once('req', (res) => {
+					console.log('Received response:', res);
+					resolve(res);
+				});
+			} catch (error) {
+				reject(error);
+			}
+		});
 	}
 
 	const aliveQ = useCallback(async () => {
 		const res = await req('aliveQ', {}, 8888);
+		console.log('aliveQ res:', res);
 		if (res === 'True') {
 			setIsActive(true);
 		} else {
 			setIsActive(false);
 		}
-	}, [setIsActive]);
+	}, [isActive, setIsActive]);
 
 	useEffect(() => {
-		aliveQ();
+		const interval = setInterval(() => {
+			aliveQ();
+		}, 15000);
+
+		return () => clearInterval(interval);
 	}, [aliveQ, isActive]);
 
 	return {

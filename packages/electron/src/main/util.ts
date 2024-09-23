@@ -1,7 +1,6 @@
 import { URL } from 'url';
 import path from 'path';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function resolveHtmlPath(htmlFileName: string) {
 	if (process.env.NODE_ENV === 'development') {
 		const port = process.env.PORT || 5173;

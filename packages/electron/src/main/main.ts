@@ -4,15 +4,30 @@
  * through IPC.
  */
 
+/*****************************************
+ **************** Imports ****************
+ *****************************************/
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import {
+	app,
+	BrowserWindow,
+	shell,
+	ipcMain,
+	dialog,
+	IpcMainEvent,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import nodeChildProcess from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import * as os from 'os';
+import os from 'os';
+import axios from 'axios';
+/*****************************************/
 
+/*****************************************
+ *********** Auto Update Setup ***********
+ *****************************************/
 class AppUpdater {
 	constructor() {
 		log.transports.file.level = 'info';
@@ -20,14 +35,11 @@ class AppUpdater {
 		autoUpdater.checkForUpdatesAndNotify();
 	}
 }
+/*****************************************/
 
-let mainWindow: BrowserWindow | null = null;
-
-if (process.env.NODE_ENV === 'production') {
-	const sourceMapSupport = require('source-map-support');
-	sourceMapSupport.install();
-}
-
+/*****************************************
+ *********** Developer Tools *************
+ *****************************************/
 const isDebug =
 	process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
@@ -47,6 +59,17 @@ const installExtensions = async () => {
 		)
 		.catch(console.log);
 };
+/*****************************************/
+
+/*****************************************
+ *********** Main Window Setup ***********
+ *****************************************/
+let mainWindow: BrowserWindow | null = null;
+
+if (process.env.NODE_ENV === 'production') {
+	const sourceMapSupport = require('source-map-support');
+	sourceMapSupport.install();
+}
 
 const createWindow = async () => {
 	if (isDebug) {
@@ -55,13 +78,13 @@ const createWindow = async () => {
 
 	const RESOURCES_PATH = app.isPackaged
 		? path.join(process.resourcesPath, 'assets')
-		: path.join(__dirname, '../../assets');
+		: path.join(
+				path.dirname(require.resolve('@wrb/frontend/assets/icon.png')),
+			);
 
 	const getAssetPath = (...paths: string[]): string => {
 		return path.join(RESOURCES_PATH, ...paths);
 	};
-
-	console.log(path.join(__dirname, 'preload.js'));
 
 	mainWindow = new BrowserWindow({
 		show: false,
@@ -77,7 +100,6 @@ const createWindow = async () => {
 		},
 	});
 
-	// mainWindow.setResizable(true);
 	mainWindow.loadURL(resolveHtmlPath('index.html'));
 
 	mainWindow.on('ready-to-show', () => {
@@ -107,24 +129,18 @@ const createWindow = async () => {
 	// Remove this if your app does not use auto updates
 	new AppUpdater();
 };
+/*****************************************/
 
-/**
- * Add event listeners...
- */
-
-ipcMain.on('ipc-example', async (event, arg) => {
-	const msgTemplate = (pingPong: string): string => `IPC test: ${pingPong}`;
-	console.log(msgTemplate(arg));
-	event.reply('ipc-example', msgTemplate('pong'));
-});
-
-// ----- Wolfram Language -----
+/*****************************************
+ *********** Wolfram Language ************
+ *****************************************/
 let wlProc: nodeChildProcess.ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
+const wlCmd = process.platform === 'linux' ? 'math' : 'wolframscript';
 
 function checkWL(): boolean {
 	try {
-		nodeChildProcess.execSync('wolframscript -version');
+		nodeChildProcess.execSync(`${wlCmd} -version`);
 		return true;
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	} catch (error) {
@@ -135,37 +151,45 @@ function startWL(): void {
 	if (isQuitting) return;
 
 	wlProc = nodeChildProcess.spawn(
-		'wolframscript',
+		wlCmd,
 		[
 			'-noinit',
 			'-noprompt',
 			'-rawterm',
 			'-script',
-			require.resolve('@erwb/wl'),
+			require.resolve('@wrb/wl'),
 		],
 		{
 			detached: true,
 		},
 	);
-
-	console.log(`WL pid: ${wlProc.pid}`);
-
+	console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${wlProc.pid}`);
 	wlProc.stdout.on('data', (data) => {
-		const dataStr = data.toString().trim();
-		console.log(`WL stdout: ${dataStr}`);
-		if (dataStr === `"Type 'exit' to end process:"`) {
+		const dataStr = data
+			.toString()
+			.trim()
+			.replace(/\\n/g, '\n')
+			.replace(/\\t/g, '\t')
+			.replace(/\\\\"/g, '')
+			.replace(/\\"/g, '')
+			.replace(/"/g, '')
+			.replace(/\\/g, '');
+
+		console.log(`WL: ${dataStr}`);
+
+		if (dataStr === `Type 'exit' to end process:`) {
 			mainWindow?.webContents.send('wl-status', 0);
 		}
 	});
 	wlProc.stderr.on('data', (err) => {
-		console.log(`WL stderr: ${err}`);
+		console.log(`WL[\x1b[0;31merror\x1b[0m]: ${err}`);
 	});
 	wlProc.on('exit', (code) => {
 		if (!isQuitting) {
-			console.log(`WL exit code: ${code}`);
+			console.log(`WL[exit]: ${code}`);
 			dialog.showErrorBox(
-				'wolframscript has quit unexpectedly',
-				'Will attempt to restart the process.',
+				'The Wolfram kernel has quit unexpectedly',
+				'Will attempt to restart.',
 			);
 			mainWindow?.webContents.send('wl-status', code);
 			startWL();
@@ -174,42 +198,67 @@ function startWL(): void {
 }
 function cleanupWL(): void {
 	if (wlProc && wlProc.pid) {
-		console.log('Terminating Wolfram Language process');
+		console.log('\x1b[0;31mTerminating Wolfram Language process\x1b[0m');
 		isQuitting = true;
 		try {
-			// treeKill(wlProc.pid, 'SIGKILL', (err) => {
-			// 	console.error(
-			// 		'Error terminating Wolfram Language process tree:',
-			// 		err,
-			// 	);
-			// });
 			process.kill(
 				// Make PID negative if on Unix systems to close entire process group
 				wlProc.pid * (os.platform() === 'win32' ? 1 : -1),
 				'SIGKILL',
 			);
 		} catch (error) {
-			console.error('Error terminating Wolfram Language process:', error);
+			console.error(
+				'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',
+				error,
+			);
 		}
 		wlProc = null;
+	}
+}
+async function req(
+	event: IpcMainEvent,
+	[endpoint, dataIn, port]: [string, object, number],
+) {
+	try {
+		const response = await axios.post(endpoint, null, {
+			baseURL: `http://localhost:${port}`,
+			params: dataIn,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		});
+		event.reply('req', response.data);
+		return response.data;
+	} catch (error) {
+		return error;
 	}
 }
 
 if (!checkWL()) {
 	dialog.showErrorBox(
-		'wolframscript not found',
+		`${wlCmd} not found`,
 		'Please install it and try again.',
 	);
 	app.exit(1);
 }
-ipcMain.on('start-wl', startWL);
-app.on('will-quit', () => {
-	cleanupWL();
-});
-// -------------------------
 
-// ----- Window Zoom ------
-ipcMain.handle(
+/*****************************************/
+
+/*****************************************
+ ********** IPC Event listeners **********
+ *****************************************/
+ipcMain.on('start-wl', startWL);
+
+ipcMain.on('req', (event, args) => {
+	req(event, args).then((res) => {
+		console.log('Request:', {
+			args,
+			res,
+		});
+	});
+});
+
+ipcMain.on(
 	'change-zoom-level',
 	(_event, we: { deltaY: number; ctrlKey: boolean }) => {
 		if (we.ctrlKey) {
@@ -221,24 +270,47 @@ ipcMain.handle(
 		}
 	},
 );
-// ------------------------
 
+ipcMain.on('ipc-example', async (event, arg) => {
+	const msgTemplate = (pingPong: string): string => `IPC test: ${pingPong}`;
+	console.log(msgTemplate(arg));
+	event.reply('ipc-example', msgTemplate('pong'));
+});
+/*****************************************/
+
+/*****************************************
+ ********** App Event listeners **********
+ *****************************************/
 app.on('window-all-closed', () => {
-	// Respect the OSX convention of having the application in memory even
-	// after all windows have been closed
+	/*
+	 * Respect the OSX convention of having the application in memory even
+	 * after all windows have been closed
+	 */
 	if (process.platform !== 'darwin') {
 		cleanupWL();
 		app.quit();
 	}
 });
+
+// app.on('will-quit', () => {
+// 	wl.cleanupWL();
+// });
+/*****************************************/
+
+/*****************************************
+ ********** App Initialization ***********
+ *****************************************/
 app.whenReady()
 	.then(() => {
 		isQuitting = false;
 		createWindow();
 		app.on('activate', () => {
-			// On macOS it's common to re-create a window in the app when the
-			// dock icon is clicked and there are no other windows open.
+			/*
+			 * On macOS it's common to re-create a window in the app when the
+			 * dock icon is clicked and there are no other windows open.
+			 */
 			if (mainWindow === null) createWindow();
 		});
 	})
 	.catch(console.log);
+/*****************************************/

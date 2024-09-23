@@ -20,15 +20,28 @@ jobs:
                   node-version: 18
                   cache: npm
 
-            - name: npm install
+            - name: Install Yarn
               run: |
-                  npm install
+                npm install -g yarn
 
-            - name: npm test
+            - name: Yarn install
+              run: |
+                  yarn
+
+            - name: Test frontend
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  yarn test
+
+            - name: Test build electron
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  npm run package
-                  npm run lint
-                  npm exec tsc
-                  npm test
+                  yarn build:electron
+
+            - name: Test build web
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  yarn build:web

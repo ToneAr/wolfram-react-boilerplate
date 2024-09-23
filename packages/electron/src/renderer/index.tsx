@@ -2,15 +2,13 @@
 
 import { createRoot } from 'react-dom/client';
 import React from 'react';
-import { Frontend } from '@erwb/frontend';
-
-import '@erwb/frontend/build/index.css';
+import { Frontend } from '@wrb/frontend';
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
 root.render(
 	<React.StrictMode>
-		<Frontend />
+		<Frontend api={window.api} />
 	</React.StrictMode>,
 );
 
@@ -24,16 +22,16 @@ window.addEventListener(
 			ctrlKey: event.ctrlKey,
 			deltaY: event.deltaY,
 		};
-		window.api.changeZoom(eventData);
+		window.api.ipc.send('change-zoom-level', eventData);
 	},
 );
 
 // calling IPC exposed from preload script
-window.api.ipcRenderer.once('ipc-example', (arg) => {
+window.api.ipc.once('ipc-example', (arg) => {
 	console.log(arg);
 });
-window.api.ipcRenderer.sendMessage('ipc-example', ['ping']);
+window.api.ipc.send('ipc-example', ['ping']);
 
 // start WL Socket
-window.api.ipcRenderer.sendMessage('start-wl', []);
+window.api.ipc.send('start-wl', []);
 // ---------

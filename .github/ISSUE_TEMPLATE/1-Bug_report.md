@@ -11,9 +11,8 @@ labels: 'bug'
 <!-- If the following boxes are not ALL checked, your issue is likely to be closed -->
 
 -   [ ] Using npm
--   [ ] Using an up-to-date [`main` branch](https://github.com/electron-react-boilerplate/electron-react-boilerplate/tree/main)
--   [ ] Using latest version of devtools. [Check the docs for how to update](https://electron-react-boilerplate.js.org/docs/dev-tools/)
--   [ ] Tried solutions mentioned in [#400](https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/400)
+-   [ ] Using an up-to-date [`main` branch](https://github.com/ToneAr/wolfram-react-boilerplate/tree/main)
+-   [ ] Using latest version of devtools. [Check the readme for how to update](/README.md#notes)
 -   [ ] For issue in production release, add devtools output of `DEBUG_PROD=true npm run build && npm start`
 -   [ ] Using `wolframscript` version 12.+
 

@@ -9,20 +9,11 @@
 
 type Channels = string;
 
-interface Handler {
+export interface Handler {
 	env: string;
-	changeZoom: (we: { deltaY: number; ctrlKey: boolean }) => Promise<unknown>;
-	ipcRenderer: {
-		sendMessage(channel: Channels, ...args: unknown[]): void;
-		on(channel: Channels, func: (...args: unknown[]) => void): () => void;
-		once(channel: Channels, func: (...args: unknown[]) => void): void;
+	ipc: {
+		send(channel: Channels, ...args: unknown[]);
+		on(channel: Channels, func: (...args: unknown[]) => void);
+		once(channel: Channels, func: (...args: unknown[]) => void);
 	};
 }
-
-declare global {
-	interface Window {
-		api: Handler;
-	}
-}
-
-export {};
