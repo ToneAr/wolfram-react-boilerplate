@@ -68,7 +68,7 @@ ipc.on('event', (data) => {
 Electron's backend is the electron's node.JS main process [exposed through window.api](./packages/electron/src/main/preload.ts) before being passed to the frontend. It uses `ipcMain` when inside the main process and `ipcRenderer` when inside the renderer. These can send messages and set up event listeners on either side.
 
 ### Web
-The web deployment's backend is an express server making use of [socket-io websockets](https://socket.io/docs/v4/) for communication with the frontend and is exposed as [WebHandler](./packages/web/src/renderer/WebHandler.ts) class passed to the frontend.
+The web deployment's backend is an express server (WRB IPC Server) making use of [socket-io websockets](https://socket.io/docs/v4/) for communication with the frontend and is exposed as [WebHandler](./packages/web/src/renderer/WebHandler.ts) class passed to the frontend.
 
 
 ### IPC API properties
@@ -121,6 +121,38 @@ if (wl.isActive) {
 		{ param: 'value' },	// Query Object (Default: {}) 	[Optional]
 		4848				// Port (Default is 4848) 		[Optional]
 	)
+}
+```
+
+## Web deployment is WAS deployment
+The current configuration of the web deployment of wrb is intended to be deployed within a Wolfram Application Server, with the WRB IPC server running within the active-web-elements-server container, and port 3000 being exposed to the real-world through nginx by routing it to the `/.ipc` endpoint.
+
+See below the an example nginx configuration:
+```config
+upstream awes {
+    server active-web-elements-server:8080;
+    keepalive 16;
+}
+
+upstream ipc {
+    server active-web-elements-server:3000;
+}
+
+# ...
+
+server {
+    listen       80;
+    server_name  nginx;
+
+    location / {
+        proxy_pass http://awes/;
+    }
+
+    location /.ipc/ {
+        proxy_pass http://ipc/;
+    }
+
+   # ...
 }
 ```
 
