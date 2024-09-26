@@ -1,7 +1,6 @@
 import { spawn, execSync } from 'child_process';
 import { Socket, Server } from 'socket.io';
 import axios from 'axios';
-import os from 'os';
 
 export default class WLManager {
 	isQuitting: boolean = false;
@@ -63,7 +62,7 @@ export default class WLManager {
 					: '127.0.0.1',
 			],
 			{
-				detached: true,
+				detached: false,
 			},
 		);
 
@@ -106,9 +105,8 @@ export default class WLManager {
 
 	cleanupWL(): void {
 		if (this.server.sockets.sockets.size < 1 && this.aliveQ()) {
-			const wait/* in minutes */ = process.env.NODE_ENV === 'development'
-				? 1
-				: 5;
+			const wait /* in minutes */ =
+				process.env.NODE_ENV === 'development' ? 0.25 : 5;
 			console.log(
 				`\x1b[0;33mScheduled termination of Wolfram Language process in ${wait} minute(s)\x1b[0m`,
 			);
@@ -121,11 +119,7 @@ export default class WLManager {
 					);
 					if (global.wlProc && global.wlProc.pid) {
 						try {
-							process.kill(
-								global.wlProc.pid *
-									(os.platform() === 'win32' ? 1 : -1),
-								'SIGKILL',
-							);
+							global.wlProc.kill('SIGKILL');
 						} catch (error) {
 							console.error(
 								'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',

@@ -4,7 +4,7 @@ import { Server } from 'socket.io';
 import WLManager from './wlManager';
 import { version, domain } from '../../package.json';
 
-global.wlProc = global.wlProc ?? null;
+global.wlProc = global?.wlProc ?? null;
 
 const base = process.env.NODE_ENV === 'development' ? '127.0.0.1' : domain;
 

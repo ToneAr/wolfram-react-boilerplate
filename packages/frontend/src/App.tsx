@@ -1,5 +1,11 @@
 // Packages
-import { MemoryRouter, Routes, Route, BrowserRouter, RouterProps } from 'react-router-dom';
+import {
+	MemoryRouter,
+	Routes,
+	Route,
+	BrowserRouter,
+	RouterProps,
+} from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useEffect } from 'react';

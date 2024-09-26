@@ -21,7 +21,6 @@ import log from 'electron-log';
 import nodeChildProcess from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import os from 'os';
 import axios from 'axios';
 /*****************************************/
 
@@ -160,7 +159,7 @@ function startWL(): void {
 			require.resolve('@wrb/wl'),
 		],
 		{
-			detached: true,
+			detached: false,
 		},
 	);
 	console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${wlProc.pid}`);
@@ -201,11 +200,7 @@ function cleanupWL(): void {
 		console.log('\x1b[0;31mTerminating Wolfram Language process\x1b[0m');
 		isQuitting = true;
 		try {
-			process.kill(
-				// Make PID negative if on Unix systems to close entire process group
-				wlProc.pid * (os.platform() === 'win32' ? 1 : -1),
-				'SIGKILL',
-			);
+			wlProc.kill('SIGKILL');
 		} catch (error) {
 			console.error(
 				'WL[\x1b[0;31merror\x1b[0m]: Terminating Wolfram Language process:',
