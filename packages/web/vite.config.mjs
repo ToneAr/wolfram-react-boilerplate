@@ -16,6 +16,7 @@ export default defineConfig({
 			external: [],
 			input: 'index.html',
 			output: {
+				format: 'iife', // For WAS compatibility
 				entryFileNames: 'assets/[name].[hash].js',
 				chunkFileNames: 'assets/[name].[hash].js',
 				assetFileNames: (assetInfo) => {

@@ -1,12 +1,18 @@
 // Packages
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+	MemoryRouter,
+	Routes,
+	Route,
+	BrowserRouter,
+	RouterProps,
+} from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useEffect } from 'react';
 
 // Hooks
 import { WLProvider, useWL } from './hooks/useWL';
-import { IPCProvider } from './hooks/useIPC';
+import { IPCProvider, useIPC } from './hooks/useIPC';
 
 // Styles
 import '../css/App.css';
@@ -25,13 +31,29 @@ const theme = createTheme({
 		},
 	},
 });
+function Router({
+	children,
+	env,
+	props,
+}: {
+	children: React.JSX.Element;
+	env: string;
+	props?: RouterProps;
+}) {
+	return env !== 'web' ? (
+		<MemoryRouter {...props}>{children}</MemoryRouter>
+	) : (
+		<BrowserRouter {...props}>{children}</BrowserRouter>
+	);
+}
 function AppContent() {
 	const wl = useWL();
+	const api = useIPC();
 
 	return !wl.isActive ? (
 		<LoadingScreen />
 	) : (
-		<Router>
+		<Router env={api.env}>
 			<Routes>
 				<Route path="/" element={<Demo />} />
 			</Routes>
