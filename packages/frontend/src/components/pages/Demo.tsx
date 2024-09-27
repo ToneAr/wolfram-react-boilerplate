@@ -64,7 +64,7 @@ export default function Demo() {
 			<img src={Banner} alt="Banner" width={500} />
 			<Typography variant="h4">
 				Cross-platform applications with <br />
-				computational superpowers
+				computational intelligence
 			</Typography>
 			<Stack spacing={2} direction="row">
 				<TextField

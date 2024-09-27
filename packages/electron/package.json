@@ -33,6 +33,7 @@
 		"asar": true,
 		"asarUnpack": "**\\*.{node,dll}",
 		"files": [
+			"../../node_modules",
 			"node_modules",
 			"package.json",
 			"out/app"
@@ -89,7 +90,7 @@
 			},
 			{
 				"from": "../../node_modules/@wrb/wl",
-				"to": "node_modules/@wrb/wl",
+				"to": "wl",
 				"filter": ["**/*"]
 			}
 		],
