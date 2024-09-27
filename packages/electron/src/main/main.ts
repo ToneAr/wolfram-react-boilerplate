@@ -149,15 +149,14 @@ function checkWL(): boolean {
 function startWL(): void {
 	if (isQuitting) return;
 
+	const scriptLoc =
+		process.env.NODE_ENV === 'development'
+			? require.resolve('@wrb/wl')
+			: path.resolve(__dirname, '../../../../../wl/deploy.wls');
+
 	wlProc = nodeChildProcess.spawn(
 		wlCmd,
-		[
-			'-noinit',
-			'-noprompt',
-			'-rawterm',
-			'-script',
-			require.resolve('@wrb/wl'),
-		],
+		['-noinit', '-noprompt', '-rawterm', '-script', scriptLoc],
 		{
 			detached: false,
 		},
