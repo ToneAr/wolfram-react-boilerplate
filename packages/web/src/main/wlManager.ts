@@ -111,6 +111,7 @@ export default class WLManager {
 				`\x1b[0;33mScheduled termination of Wolfram Language process in ${wait} minute(s)\x1b[0m`,
 			);
 			this.isQuitting = true;
+			this.startWL = this.startWL.bind(this);
 
 			const cleanupTimeout = setTimeout(
 				() => {
