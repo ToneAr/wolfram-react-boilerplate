@@ -1,3 +1,4 @@
+import { Handler } from '@wrb/frontend/src/api';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 export type Channels = string;
 
@@ -25,4 +26,4 @@ const electronHandler = {
 };
 contextBridge.exposeInMainWorld('api', electronHandler);
 
-export type ElectronHandler = typeof electronHandler;
+export type ElectronHandler = Handler;

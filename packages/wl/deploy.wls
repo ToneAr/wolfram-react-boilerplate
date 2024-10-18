@@ -163,6 +163,5 @@ Pause[0.1];
 
 Print["Type 'exit' to end process:" ];
 While[
-	!MatchQ[ToString[Input[]], "exit"],
-	Null
+	!MatchQ[ToString[Input[]], "exit"]
 ];
