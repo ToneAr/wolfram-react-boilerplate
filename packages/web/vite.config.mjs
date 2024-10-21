@@ -16,14 +16,14 @@ export default defineConfig({
 			external: [],
 			input: 'index.html',
 			output: {
-				format: 'iife', // For WAS compatibility
-				entryFileNames: 'assets/[name].[hash].js',
-				chunkFileNames: 'assets/[name].[hash].js',
+				format: 'iffe',
+				entryFileNames: 'src/renderer/[name].js',
+				chunkFileNames: 'src/renderer/[name].js',
 				assetFileNames: (assetInfo) => {
 					if (assetInfo.name.endsWith('.css')) {
-						return 'assets/[name].[hash].css';
+						return 'src/renderer/[name].css';
 					}
-					return 'assets/[name].[hash][extname]';
+					return 'src/renderer/assets/[name][extname]';
 				},
 			},
 		},

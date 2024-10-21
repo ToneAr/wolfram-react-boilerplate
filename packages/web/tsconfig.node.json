@@ -1,0 +1,13 @@
+{
+	"extends": "../../tsconfig.node.json",
+	"include": [
+		"./src/main/**/*"
+	],
+	"compilerOptions": {
+		"outDir": "./build",
+		"baseUrl": ".",
+		"module": "CommonJS",
+		"composite": false,
+		"types": ["node"]
+	}
+}
