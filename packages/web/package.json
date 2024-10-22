@@ -10,18 +10,20 @@
 	"source": "src/renderer/index.html",
 	"domain": "wreltech.wolfram.com",
 	"scripts": {
-		"format": "prettier --write .",
+"format": "prettier --write .",
 		"lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
 		"typecheck:node": "tsc --noEmit -p ../../tsconfig.node.json --composite false",
 		"typecheck:web": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
 		"typecheck": "yarn typecheck:node && yarn typecheck:web",
 		"start": "concurrently \"yarn start:server\" \"yarn start:client\"",
 		"start:client": "vite",
-		"start:server": "nodemon",
+		"start:server": "cross-env NODE_ENV=production pm2 start ./build/src/main/server.js --name \"wrb-web-ipc\"",
 		"dev": "concurrently \"yarn dev:server\" \"yarn dev:client\"",
 		"dev:client": "cross-env NODE_ENV=development vite dev",
 		"dev:server": "cross-env NODE_ENV=development nodemon",
-		"build": "yarn typecheck && vite build",
+		"build": "yarn build:client && yarn build:server",
+		"build:client": "yarn typecheck:web && vite build",
+		"build:server": "yarn typecheck:node && tsc -p ./tsconfig.node.json",
 		"preview": "yarn build && concurrently \"yarn dev:server\" \"vite preview\""
 	},
 	"dependencies": {

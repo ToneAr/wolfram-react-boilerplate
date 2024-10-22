@@ -12,7 +12,6 @@ root.render(
 	</React.StrictMode>,
 );
 
-console.log(window.api);
 
 // CTRL+Scroll zoom event listener
 window.addEventListener(

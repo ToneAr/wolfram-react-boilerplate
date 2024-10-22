@@ -10,7 +10,7 @@ The Wolfram React Boilerplate, shortened to WRB, is a boilerplate repository all
 **This project uses `yarn` as its package manager. Using any `npm` should be avoided in place of yarn**.
 
 Setup `yarn` globally on your machine by using:
-```
+```sh
 npm i -g yarn
 ```
 
@@ -70,6 +70,13 @@ Electron's backend is the electron's node.JS main process [exposed through windo
 ### Web
 The web deployment's backend is an express server (WRB IPC Server) making use of [socket-io websockets](https://socket.io/docs/v4/) for communication with the frontend and is exposed as [WebHandler](./packages/web/src/renderer/WebHandler.ts) class passed to the frontend.
 
+#### Production
+[PM2](https://pm2.keymetrics.io/docs/usage/quick-start/) is used to run the WRB IPC server. Install it using:
+```sh
+npm install pm2 -g
+# or
+yarn global add pm2
+```
 
 ### IPC API properties
 | Element 			| Type 									| Description 	|

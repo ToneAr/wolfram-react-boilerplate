@@ -30,6 +30,7 @@ io.on('connection', (socket) => {
 	 ******** Socket Event listeners *********
 	 *****************************************/
 	socket.on('start-wl', wlManager.startWL);
+	// socket.on('stop-wl', wlManager.cleanupWL);
 
 	socket.on('req', (args: [string, object, number]) => {
 		wlManager
@@ -38,8 +39,6 @@ io.on('connection', (socket) => {
 				console.log('WL[Request]:', { from: socket.id, args, res }),
 			);
 	});
-
-	socket.on('stop-wl', wlManager.cleanupWL);
 
 	socket.on('disconnect', () => {
 		console.log(
@@ -53,10 +52,11 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
+const url = `\x1b[0;36mhttp://${base}:\x1b[1;36m${PORT}\x1b[0;36m/\x1b[0;39m`;
 server.listen(PORT, () => {
 	console.log(`
   \x1b[1;31mWRB IPC Server \x1b[0;31mv${version}\x1b[0m
 
-  \x1b[0;31m➜\x1b[0m  \x1b[1;39mServer\x1b[0m: \x1b[0;36mhttp://${base}:\x1b[1;36m${PORT}\x1b[0;36m/\x1b[0;39m
+  ${'\x1b[0;31m➜\x1b[0m  \x1b[1;39mServer\x1b[0m: '}${url}
 `);
 });
