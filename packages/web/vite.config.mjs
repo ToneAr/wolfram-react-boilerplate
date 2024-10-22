@@ -16,7 +16,7 @@ export default defineConfig({
 			external: [],
 			input: 'index.html',
 			output: {
-				format: 'iffe',
+				format: 'iife',
 				entryFileNames: 'src/renderer/[name].js',
 				chunkFileNames: 'src/renderer/[name].js',
 				assetFileNames: (assetInfo) => {
