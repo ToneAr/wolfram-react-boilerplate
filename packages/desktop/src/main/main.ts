@@ -154,7 +154,7 @@ function connectWebSocket(): void {
 		console.log('WL[\x1b[0;36mWebSocket\x1b[0m]: Connected');
 	};
 	WLWebSocket.onmessage = (event) => {
-		const data: IWLWebSocketMessage = JSON.parse(event.data as string);
+		const data: IWLWebSocketMessage = JSON.parse(event.data.toString());
 		if (data.tag === 'connected' && data.success) {
 			isWlActive = true;
 			isStartup = false;

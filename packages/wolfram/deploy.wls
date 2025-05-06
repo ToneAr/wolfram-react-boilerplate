@@ -213,6 +213,10 @@ EchoTemporaryCLI[
 			]
 		|>
 	];
+	If[!MatchQ[server, _WebSocketServerObject],
+		isFailure = True;
+		AppendTo[failures, server]
+	];
 	AppendTo[messages,
 		Splice @ {
 			ANSITools["Style", Blue]["➜ WebSocketLink: "] <>
