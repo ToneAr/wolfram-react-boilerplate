@@ -3866,8 +3866,8 @@ Cell[TextData[{
  ButtonBox["yarn workspaces",
   BaseStyle->"Hyperlink",
   ButtonData->{
-    URL["https://classic.yarnpkg.com/lang/en/docs/workspaces/"], None},
-  ButtonNote->"https://classic.yarnpkg.com/lang/en/docs/workspaces/"],
+    URL["https://classic.bunpkg.com/lang/en/docs/workspaces/"], None},
+  ButtonNote->"https://classic.bunpkg.com/lang/en/docs/workspaces/"],
  "."
 }], "Item",
  CellChangeTimes->{{3.937986563372004*^9, 3.937986664289097*^9}, {
@@ -13557,10 +13557,10 @@ node.JS main process ",
   BaseStyle->"Hyperlink",
   ButtonData->{
     URL["/mnt/Data/Working/personal-projects/personal-project-WRB/packages/\
-electron/src/main/preload.ts"], None},
+desktop/src/main/preload.ts"], None},
   ButtonNote->
    "/mnt/Data/Working/personal-projects/personal-project-WRB/packages/\
-electron/src/main/preload.ts"],
+desktop/src/main/preload.ts"],
  " before being passed to the frontend."
 }], "Text",
  CellChangeTimes->{
@@ -14705,10 +14705,10 @@ Cell[TextData[{
   BaseStyle->"Hyperlink",
   ButtonData->{
     URL["/mnt/Data/Working/personal-projects/personal-project-WRB/packages/\
-electron/src/main/main.ts"], None},
+desktop/src/main/main.ts"], None},
   ButtonNote->
    "/mnt/Data/Working/personal-projects/personal-project-WRB/packages/\
-electron/src/main/main.ts"],
+desktop/src/main/main.ts"],
  " sets up event-listeners used to manage IPC and the lifecycle of WL \
 process. "
 }], "Text",
@@ -16807,18 +16807,18 @@ Cell["2 min", "AuthorOnly",
 
 Cell[CellGroupData[{
 
-Cell["Yarn", "Section",
+Cell["bun", "Section",
  CellChangeTimes->{{3.936723851435014*^9, 3.936723856517653*^9}, {
    3.936726137915792*^9, 3.936726140570196*^9}, 3.9367265222257957`*^9, 
    3.9380783353875103`*^9},ExpressionUUID->"a7f1f758-be07-4df1-a854-\
 8aab439982dc"],
 
 Cell[TextData[{
- ButtonBox["Yarn",
+ ButtonBox["bun",
   BaseStyle->"Hyperlink",
   ButtonData->{
-    URL["https://classic.yarnpkg.com/en/"], None},
-  ButtonNote->"https://classic.yarnpkg.com/en/"],
+    URL["https://classic.bunpkg.com/en/"], None},
+  ButtonNote->"https://classic.bunpkg.com/en/"],
  " is a package manager with its primary strengths over npm being \
 deterministic dependency installation and the use of caching and \
 parallelization for faster installations and building."
@@ -16963,11 +16963,11 @@ Cell["Scripts", "Subsection",
 3b6426830c6f"],
 
 Cell[TextData[{
- "Yarn scripts allow for the definitions of commands within the ",
+ "bun scripts allow for the definitions of commands within the ",
  StyleBox["package.json",
   FontSlant->"Italic"],
  " file which can be easily run in the command line using ",
- StyleBox["yarn commandName", "Code"],
+ StyleBox["bun commandName", "Code"],
  "."
 }], "Text",
  CellChangeTimes->{{3.9367247292642603`*^9, 3.936724831624205*^9}, {
@@ -16976,7 +16976,7 @@ Cell[TextData[{
 58de2a4badf3"],
 
 Cell["\<\
-Each sub-package within WRB contains its own yarn scripts and there are far \
+Each sub-package within WRB contains its own bun scripts and there are far \
 too many to go through in this talk, however, the main scripts are exposed to \
 the main root package are outlined below:\
 \>", "Text",
@@ -16990,17 +16990,17 @@ Cell[BoxData[
   TagBox[
    DynamicModuleBox[{TypeSystem`NestedGrid`PackagePrivate`$state$$ = <|
     "InitialData" -> {<|
-       "Script" -> "yarn test", "Alternatives" -> "-", "Description" -> 
+       "Script" -> "bun test", "Alternatives" -> "-", "Description" -> 
         "Runs front-end jest tests"|>, <|
-       "Script" -> "yarn start:{alt}", "Alternatives" -> 
+       "Script" -> "bun start:{alt}", "Alternatives" -> 
         "'web' | 'electron' | 'wl'", "Description" -> 
         "Starts a preview version of the application"|>, <|
-       "Script" -> "yarn dev:{alt}", "Alternatives" -> "'web' | 'electron'", 
+       "Script" -> "bun dev:{alt}", "Alternatives" -> "'web' | 'electron'", 
         "Description" -> 
         "Starts a development server for the application"|>, <|
-       "Script" -> "yarn build:{alt}", "Alternatives" -> "'web' | 'electron'",
+       "Script" -> "bun build:{alt}", "Alternatives" -> "'web' | 'electron'",
          "Description" -> "Compile and build package files"|>, <|
-       "Script" -> "yarn package:{alt}", "Alternatives" -> 
+       "Script" -> "bun package:{alt}", "Alternatives" -> 
         "'win' | 'mac' | 'linux'", "Description" -> 
         "Package electron application distributable for given platform"|>}, 
      "AllowEmbedding" -> True, "InitialShape" -> 
@@ -17157,7 +17157,7 @@ Cell[BoxData[
              Alignment -> {Left, Baseline}]}, {
             Item[
              Pane[
-              Annotation["yarn test", 
+              Annotation["bun test", 
                TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
                 TypeSystem`NestedGrid`PackagePrivate`localHold[
                 TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{1, 
@@ -17194,7 +17194,7 @@ Cell[BoxData[
                 Hue[0, 0, 0.2], Automatic}}, ItemSize -> {Full, Automatic}]}, {
             Item[
              Pane[
-              Annotation["yarn start:{alt}", 
+              Annotation["bun start:{alt}", 
                TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
                 TypeSystem`NestedGrid`PackagePrivate`localHold[
                 TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{2, 
@@ -17234,7 +17234,7 @@ Cell[BoxData[
                 Hue[0, 0, 0.2]}}, ItemSize -> {Full, Automatic}]}, {
             Item[
              Pane[
-              Annotation["yarn dev:{alt}", 
+              Annotation["bun dev:{alt}", 
                TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
                 TypeSystem`NestedGrid`PackagePrivate`localHold[
                 TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{3, 
@@ -17274,7 +17274,7 @@ Cell[BoxData[
                 Hue[0, 0, 0.2]}}, ItemSize -> {Full, Automatic}]}, {
             Item[
              Pane[
-              Annotation["yarn build:{alt}", 
+              Annotation["bun build:{alt}", 
                TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
                 TypeSystem`NestedGrid`PackagePrivate`localHold[
                 TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{4, 
@@ -17314,7 +17314,7 @@ Cell[BoxData[
                 Hue[0, 0, 0.2]}}, ItemSize -> {Full, Automatic}]}, {
             Item[
              Pane[
-              Annotation["yarn package:{alt}", 
+              Annotation["bun package:{alt}", 
                TypeSystem`NestedGrid`PackagePrivate`$SliceMarker[
                 TypeSystem`NestedGrid`PackagePrivate`localHold[
                 TypeSystem`NestedGrid`PackagePrivate`$outputID$$]][{5, 
@@ -17672,7 +17672,7 @@ Cell["For example, package Linux application:", "Text",
   3.9380788470379763`*^9}},ExpressionUUID->"4224ce0c-4f03-4e94-b5bf-\
 54818055b5b1"],
 
-Cell["yarn package:linux", "ExternalLanguage",
+Cell["bun package:linux", "ExternalLanguage",
  CellEvaluationLanguage->"Shell",
  CellChangeTimes->{{3.936725161755053*^9, 3.936725181175292*^9}, {
   3.938078801191296*^9, 

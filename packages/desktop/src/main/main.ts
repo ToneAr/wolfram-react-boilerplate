@@ -22,6 +22,7 @@ import nodeChildProcess from 'child_process';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import axios from 'axios';
+import WebSocket from 'ws';
 /*****************************************/
 
 /*****************************************
@@ -87,15 +88,16 @@ const createWindow = async () => {
 
 	mainWindow = new BrowserWindow({
 		show: false,
-		width: 1024,
-		height: 728,
-		// transparent: true,
-		// resizable: true,
+		minWidth: 1024,
+		minHeight: 728,
 		icon: getAssetPath('icon.png'),
 		webPreferences: {
 			contextIsolation: true,
 			sandbox: true,
 			preload: path.join(__dirname, 'preload.js'),
+
+			webSecurity: process.env.NODE_ENV !== 'development',
+			allowRunningInsecureContent: process.env.NODE_ENV === 'development',
 		},
 	});
 
@@ -133,10 +135,51 @@ const createWindow = async () => {
 /*****************************************
  *********** Wolfram Language ************
  *****************************************/
+interface IWLWebSocketMessage {
+	uuid: string;
+	tag: string;
+	message: string;
+	success: boolean;
+}
 let wlProc: nodeChildProcess.ChildProcessWithoutNullStreams | null = null;
 let isQuitting = false;
-const wlCmd = process.platform === 'linux' ? 'math' : 'wolframscript';
+let isWlActive = false;
+let wlRestartCount = 0;
 
+const wlCmd = process.platform === 'linux' ? 'math' : 'wolframscript';
+function connectWebSocket(): void {
+	let isStartup = true;
+	const WLWebSocket = new WebSocket('ws://localhost:38080');
+	WLWebSocket.onopen = () => {
+		console.log('WL[\x1b[0;36mWebSocket\x1b[0m]: Connected');
+	};
+	WLWebSocket.onmessage = (event) => {
+		const data: IWLWebSocketMessage = JSON.parse(event.data as string);
+		if (data.tag === 'connected' && data.success) {
+			isWlActive = true;
+			isStartup = false;
+			mainWindow?.webContents.send('wl-status', 0);
+		} else if (data.tag === 'disconnected' && data.success) {
+			isWlActive = false;
+			mainWindow?.webContents.send('wl-status', -1);
+		}
+	};
+	WLWebSocket.onclose = (): void => {
+		setTimeout(connectWebSocket, 1000);
+		isWlActive = false;
+		if (!isStartup) {
+			console.log('WebSocket disconnected');
+			mainWindow?.webContents.send('wl-status', -1);
+		}
+	};
+	WLWebSocket.onerror = (): void => {
+		isWlActive = false;
+		if (!isStartup) {
+			console.error('WebSocket error');
+			WLWebSocket.close();
+		}
+	};
+}
 function checkWL(): boolean {
 	try {
 		nodeChildProcess.execSync(`${wlCmd} -version`);
@@ -149,19 +192,24 @@ function checkWL(): boolean {
 function startWL(): void {
 	if (isQuitting) return;
 
+	connectWebSocket();
+	if (isWlActive) {
+		console.log('WL: Already running');
+		return;
+	}
+
 	const scriptLoc =
 		process.env.NODE_ENV === 'development'
-			? require.resolve('@wrb/wl')
-			: path.resolve(__dirname, '../../../../../wl/deploy.wls');
+			? require.resolve('@wrb/wolfram')
+			: path.resolve(__dirname, '../../../../../wl/deploy.wls'); // TODO: This annoys me. Fix it.
 
 	wlProc = nodeChildProcess.spawn(
 		wlCmd,
 		['-noinit', '-noprompt', '-rawterm', '-script', scriptLoc],
-		{
-			detached: false,
-		},
+		{ detached: false },
 	);
 	console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${wlProc.pid}`);
+
 	wlProc.stdout.on('data', (data) => {
 		const dataStr = data
 			.toString()
@@ -172,24 +220,24 @@ function startWL(): void {
 			.replace(/\\"/g, '')
 			.replace(/"/g, '')
 			.replace(/\\/g, '');
-
 		console.log(`WL: ${dataStr}`);
-
-		if (dataStr === `Type 'exit' to end process:`) {
-			mainWindow?.webContents.send('wl-status', 0);
-		}
 	});
 	wlProc.stderr.on('data', (err) => {
 		console.log(`WL[\x1b[0;31merror\x1b[0m]: ${err}`);
 	});
 	wlProc.on('exit', (code) => {
 		if (!isQuitting) {
-			console.log(`WL[exit]: ${code}`);
-			dialog.showErrorBox(
-				'The Wolfram kernel has quit unexpectedly',
-				'Will attempt to restart.',
-			);
-			mainWindow?.webContents.send('wl-status', code);
+			console.log(`WL[exit]: ${code ?? -1}`);
+			mainWindow?.webContents.send('wl-status', code ?? -1);
+			wlProc?.kill('SIGKILL');
+			wlRestartCount++;
+			if (wlRestartCount > 2) {
+				dialog.showErrorBox(
+					//`The Wolfram kernel (${scriptLoc}) has quit unexpectedly`,
+					`Failed to start Wolfram Engine`,
+					'Quitting',
+				);
+			}
 			startWL();
 		}
 	});
@@ -217,9 +265,7 @@ async function req(
 		const response = await axios.post(endpoint, null, {
 			baseURL: `http://localhost:${port}`,
 			params: dataIn,
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		});
 		event.reply('req', response.data);
 		return response.data;
@@ -245,10 +291,7 @@ ipcMain.on('start-wl', startWL);
 
 ipcMain.on('req', (event, args) => {
 	req(event, args).then((res) => {
-		console.log('Request:', {
-			args,
-			res,
-		});
+		console.log('Request:', { args, res });
 	});
 });
 
@@ -270,11 +313,25 @@ ipcMain.on('ipc-example', async (event, arg) => {
 	console.log(msgTemplate(arg));
 	event.reply('ipc-example', msgTemplate('pong'));
 });
-/*****************************************/
-
 /*****************************************
  ********** App Event listeners **********
  *****************************************/
+
+// SSL/TSL: this is the self signed certificate support
+if (process.env.NODE_ENV === 'development') {
+	app.on(
+		'certificate-error',
+		(event, webContents, url, error, certificate, callback) => {
+			/*
+			 * On certificate error we disable default behavior (stop loading the page)
+			 * and we then say "it is all fine - true" to the callback
+			 */
+			event.preventDefault();
+			callback(true);
+		},
+	);
+}
+
 app.on('window-all-closed', () => {
 	/*
 	 * Respect the OSX convention of having the application in memory even

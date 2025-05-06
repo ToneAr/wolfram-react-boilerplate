@@ -2,7 +2,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 
 export type Channels = string;
-export type Environments = 'web' | 'electron' | 'jest';
+export type Environments = 'web' | 'wwe' | 'electron' | 'jest';
 
 export interface Handler {
 	env: Environments;

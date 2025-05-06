@@ -1,0 +1,4 @@
+[submodule "wolfram-web-engine-utilities"]
+	path = packages/wwe/wolfram-web-engine-utilities
+	url = git@github.com:WREL-Consulting/wolfram-web-engine-utilities.git
+	branch = master

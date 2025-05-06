@@ -4,6 +4,11 @@
 		".prettierrc": "jsonc",
 		".eslintignore": "ignore"
 	},
+	"files.exclude": {
+		"**/.git": true,
+		"**/.gitattributes": true,
+		
+	},
 
 	"eslint.validate": [
 		"javascript",
@@ -20,7 +25,7 @@
 		".git": true,
 		".eslintcache": true,
 		".misc/dll": true,
-		"yarn.lock": true,
+		"bun.lock": true,
 		"out/{build,app/dist}": true,
 		"node_modules": true,
 		"npm-debug.log.*": true,
@@ -30,6 +35,5 @@
 	},
 	"cSpell.words": [
 		"wrb"
-	],
-	"CodeGPT.apiKey": "CodeGPT Plus Beta"
+	]
 }

@@ -3,26 +3,23 @@ import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 import postcss from '@vituum/vite-plugin-postcss';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import mkcert from 'vite-plugin-mkcert';
+import { base } from './package.json';
 
 export default defineConfig({
-	base: './',
-	server: {
-		watch: {
-			usePolling: true,
-			ignored: ['**/node_modules/**', '**/build-wwe/**', '.git/**'],
-		},
-	},
+	base: process.env.NODE_ENV === 'development' ? './' : base,
 	build: {
-		outDir: './build',
-		target: 'es2022',
+		outDir: './build/',
+		target: 'esnext',
 		cssCodeSplit: false,
 		emptyOutDir: true,
 		manifest: true,
+		// sourcemap: true,
 		rollupOptions: {
 			external: [],
 			input: 'index.html',
 			output: {
-				format: 'iife',
+				// format: 'iife',
 				entryFileNames: 'src/renderer/[name].js',
 				chunkFileNames: 'src/renderer/[name].js',
 				assetFileNames: (assetInfo) => {
@@ -41,26 +38,11 @@ export default defineConfig({
 		},
 	},
 	plugins: [
+		mkcert(),
 		react(),
 		svgr({ svgrOptions: { icon: true } }),
 		postcss(),
 		tsconfigPaths(),
-		{
-			/*******************************************************
-			 * Workaround for missing MIME types from WAS.
-			 * Defer is unsafe and also breaks in some environments.
-			 * TODO: Fix MIME types in WAS or switch to WWE
-			 ******************************************************/
-			name: 'html-transform',
-			transformIndexHtml(html) {
-				return process.env.NODE_ENV !== 'development'
-					? html.replace(
-							/<script type="module"/g,
-							'<script defer="defer"',
-						)
-					: html;
-			},
-		},
 	],
 	css: {
 		// This ensures CSS Modules generate type definitions

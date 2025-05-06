@@ -55,7 +55,7 @@ export default class WLManager {
 				'-noprompt',
 				'-rawterm',
 				'-script',
-				require.resolve('@wrb/wl'),
+				require.resolve('@wrb/wolfram'),
 				'-b',
 				process.env.NODE_ENV !== 'development'
 					? '0.0.0.0'
@@ -143,7 +143,11 @@ export default class WLManager {
 		}
 	}
 
-	async req(endpoint: string, dataIn: object = {}, port: number = 4848) {
+	async req(
+		endpoint: string,
+		dataIn: object = {},
+		port: number = 4848,
+	): Promise<unknown> {
 		try {
 			const response = await axios.post(endpoint, null, {
 				baseURL: `http://127.0.0.1:${port}`,

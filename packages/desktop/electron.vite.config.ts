@@ -32,6 +32,12 @@ export default defineConfig({
 		},
 	},
 	renderer: {
+		server: {
+			watch: {
+				usePolling: true,
+				ignored: ['**/node_modules/**', '**/build-wwe/**', '.git/**'],
+			},
+		},
 		resolve: {
 			alias: {
 				react: 'react',

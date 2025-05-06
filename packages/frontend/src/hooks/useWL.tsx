@@ -1,22 +1,16 @@
 import { Handler } from '../api';
 import { useIPC } from './useIPC';
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface IuseWL {
 	isActive: boolean;
-	req: (endpoint: string, dataIn?: object, port?: number) => any;
+	req: (endpoint: string, dataIn?: object, port?: number) => Promise<unknown>;
 }
 function useWl(): IuseWL {
 	const [isActive, setIsActive] = useState<boolean>(false);
 	const [api] = useState<Handler>(useIPC());
 
-	function handleWlCode(code) {
+	function handleWlCode(code: number | null): void {
 		if (code === 0) {
 			console.log('WL Ready');
 			setIsActive(true);
@@ -27,10 +21,13 @@ function useWl(): IuseWL {
 	}
 
 	useEffect(() => {
-		api.ipc.on('wl-status', (code) => {
-			handleWlCode(code);
-			console.log('wl-status effect:', isActive);
-		});
+		if (api.env !== 'wwe') {
+			api.ipc.on('wl-status', (code) => {
+				handleWlCode(code as number | null);
+			});
+		} else {
+			setIsActive(true);
+		}
 	});
 
 	async function req(
@@ -52,24 +49,21 @@ function useWl(): IuseWL {
 		});
 	}
 
-	const aliveQ = useCallback(async () => {
-		const res = await req('aliveQ', {}, 8888);
-		console.log('aliveQ res:', res);
-		setIsActive((res as boolean) ?? false);
-	}, [isActive, setIsActive]);
+	// const aliveQ = useCallback(async () => {
+	// 	const res = await req('aliveQ', {}, 8888);
+	// 	console.log('aliveQ res:', res);
+	// 	setIsActive((res as boolean) ?? false);
+	// }, [isActive, setIsActive]);
 
-	useEffect(() => {
-		const interval = setInterval(() => {
-			aliveQ();
-		}, 15000);
+	// useEffect(() => {
+	// 	const interval = setInterval(() => {
+	// 		aliveQ();
+	// 	}, 15000);
 
-		return () => clearInterval(interval);
-	}, [aliveQ, isActive]);
+	// 	return (): void => clearInterval(interval);
+	// }, [aliveQ, isActive]);
 
-	return {
-		isActive,
-		req,
-	};
+	return { isActive, req };
 }
 
 const WLContext = createContext<IuseWL>({
@@ -77,12 +71,16 @@ const WLContext = createContext<IuseWL>({
 	req: async () => {},
 });
 
-function WLProvider({ children }: { children: React.ReactNode }) {
+function WLProvider({
+	children,
+}: {
+	children: React.ReactNode;
+}): React.ReactElement {
 	const wl = useWl();
 	return <WLContext.Provider value={wl}>{children}</WLContext.Provider>;
 }
 
-function useWL() {
+function useWL(): IuseWL {
 	return useContext(WLContext);
 }
 

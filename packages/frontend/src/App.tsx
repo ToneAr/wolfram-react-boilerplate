@@ -24,12 +24,7 @@ import LoadingScreen from './components/pages/LoadingScreen';
 import { Handler } from './api';
 
 const theme = createTheme({
-	palette: {
-		mode: 'dark',
-		primary: {
-			main: '#ee0915',
-		},
-	},
+	palette: { mode: 'dark', primary: { main: '#ee0915' } },
 });
 function Router({
 	children,
@@ -39,14 +34,14 @@ function Router({
 	children: React.JSX.Element;
 	env: string;
 	props?: RouterProps;
-}) {
+}): React.ReactElement {
 	return env !== 'web' ? (
 		<MemoryRouter {...props}>{children}</MemoryRouter>
 	) : (
 		<BrowserRouter {...props}>{children}</BrowserRouter>
 	);
 }
-function AppContent() {
+function AppContent(): React.ReactElement {
 	const wl = useWL();
 	const api = useIPC();
 
@@ -61,13 +56,13 @@ function AppContent() {
 	);
 }
 
-export function Frontend({ api }: { api: Handler }) {
+export function Frontend({ api }: { api: Handler }): React.ReactElement {
 	useEffect(() => {
 		document.title = 'WRB: Example Project';
 	});
 	return (
 		<ThemeProvider theme={theme}>
-			<CssBaseline />
+			<CssBaseline enableColorScheme />
 			<IPCProvider api={api}>
 				<WLProvider>
 					<AppContent />

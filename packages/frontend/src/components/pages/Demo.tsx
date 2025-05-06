@@ -13,7 +13,7 @@ import {
 import Banner from '../../../assets/banner.png';
 import { useWL } from '../../hooks/useWL';
 
-export default function Demo() {
+export default function Demo(): React.ReactElement {
 	const wl = useWL();
 	const [evaluator, setEvaluator] = React.useState<
 		'Python' | 'NodeJS' | 'Shell'
@@ -35,7 +35,7 @@ export default function Demo() {
 			.req(`/evaluate-${evaluator}`, {
 				in: evaluatorInput,
 			})
-			.then((res) => setResult(res))
+			.then((res) => setResult(res as string))
 			.catch((err) => console.log(err));
 	};
 
@@ -44,7 +44,7 @@ export default function Demo() {
 			.req(`/evaluate`, {
 				in: wlEvaluatorInput,
 			})
-			.then((res) => setResult(res))
+			.then((res) => setResult(res as string))
 			.catch((err) => console.log(err));
 	};
 	const handleWLInputChange = (

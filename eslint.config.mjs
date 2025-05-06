@@ -1,57 +1,50 @@
+import tsParser from '@typescript-eslint/parser';
 import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import react from 'eslint-plugin-react';
 import globals from 'globals';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-	baseDirectory: __dirname,
-	recommendedConfig: js.configs.recommended,
-	allConfig: js.configs.all,
-});
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
+import tseslint from 'typescript-eslint';
 
 export default [
-	...compat.extends(
-		'eslint:recommended',
-		'plugin:react/recommended',
-		'plugin:react/jsx-runtime',
-		'@electron-toolkit/eslint-config-ts/recommended',
-		'@electron-toolkit/eslint-config-prettier',
-	),
+	...tseslint.configs.recommended,
 	{
+		files: ['**/*.{js,jsx,ts,tsx}'],
 		plugins: {
 			'@typescript-eslint': typescriptEslint,
+			react: react,
+			prettier: prettierPlugin,
 		},
 
 		languageOptions: {
-			globals: {
-				...globals.node,
+			parser: tsParser,
+			parserOptions: {
+				ecmaVersion: 2022,
+				sourceType: 'module',
+				ecmaFeatures: { jsx: true },
 			},
-			ecmaVersion: 2022,
-			sourceType: 'module',
+			globals: { ...globals.node, ...globals.browser },
 		},
 		settings: {
+			react: { version: 'detect' },
 			'import/resolver': {
 				node: {
-					moduleDirectory: ['**/node_modules/*', '**/src/*'],
+					moduleDirectory: [
+						'**/node_modules/*',
+						'**/src/*',
+						'**/frontend/*',
+					],
 				},
 				typescript: {},
-			},
-
-			'import/parsers': {
-				'@typescript-eslint/parser': ['.ts', '.tsx'],
 			},
 		},
 
 		rules: {
+			'@typescript-eslint/no-unused-vars': 'warn',
 			'@typescript-eslint/no-unused-expressions': 'off',
-			'@typescript-eslint/no-require-imports': 'off',
-			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-require-imports': 'warn',
+			'@typescript-eslint/no-explicit-any': 'warn',
 			'@typescript-eslint/explicit-function-return-type': 'off',
-			'@typescript/explicit-function-return-type': 'off',
 			'import/no-extraneous-dependencies': 'off',
 			'react/react-in-jsx-scope': 'off',
 			'react/jsx-filename-extension': 'off',
@@ -62,6 +55,9 @@ export default [
 			'@typescript-eslint/no-shadow': 'error',
 			'no-unused-vars': 'off',
 			'@typescript-eslint/no-unused-vars': 'error',
+
+			'prettier/prettier': 'warn',
 		},
 	},
+	prettierConfig,
 ];

@@ -9,18 +9,14 @@
 	"scripts": {
 		"format": "prettier --write .",
 		"lint": "eslint . --fix",
-
 		"typecheck:node": "tsc --noEmit -p ../../tsconfig.node.json --composite false",
 		"typecheck:web": "tsc --noEmit -p ../../tsconfig.web.json --composite false",
-		"typecheck": "yarn typecheck:node && yarn typecheck:web",
-
+		"typecheck": "bun typecheck:node && bun typecheck:web",
 		"start": "electron-vite preview",
-
 		"dev": "electron-vite dev",
-
-		"build": "yarn typecheck && electron-vite build",
-		"build:unpack": "yarn build && electron-builder --dir",
-		"build:win": "yarn build && electron-builder --win",
+		"build": "bun typecheck && electron-vite build",
+		"build:unpack": "bun build && electron-builder --dir",
+		"build:win": "bun build && electron-builder --win",
 		"build:mac": "electron-vite build && electron-builder --mac",
 		"build:linux": "electron-vite build && electron-builder --linux"
 	},
@@ -89,7 +85,7 @@
 				"filter": ["**/*"]
 			},
 			{
-				"from": "../../node_modules/@wrb/wl",
+				"from": "../../node_modules/@wrb/wolfram",
 				"to": "wl",
 				"filter": ["**/*"]
 			}
@@ -109,8 +105,10 @@
 		"logLevel": "quiet"
 	},
 	"dependencies": {
-		"@wrb/wl": "*",
-		"@wrb/frontend": "*"
+		"@types/ws": "^8.18.1",
+		"@wrb/frontend": "*",
+		"@wrb/wolfram": "*",
+		"ws": "^8.18.2"
 	},
 	"devDependencies": {
 		"@electron/notarize": "^2.1.0",

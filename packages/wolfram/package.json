@@ -1,5 +1,5 @@
 {
-	"name": "@wrb/wl",
+	"name": "@wrb/wolfram",
 	"version": "1.0.0",
 	"description": "WRB Sub-package: WL",
 	"repository": "git+https://github.com/ToneAr/wolfram-react-boilerplate",

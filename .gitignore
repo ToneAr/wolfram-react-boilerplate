@@ -31,3 +31,4 @@ npm-debug.log.*
 # Dev
 *.dev.nb
 *.dev.wl*
+**/secrets/*

@@ -4,40 +4,31 @@
 
 # The Wolfram React Boilerplate (WRB)
 
-The Wolfram React Boilerplate, shortened to WRB, is a boilerplate repository allowing the development of cross-platform applications intended to be deployed to both web and desktop sharing a common frontend. It separates each part into a distinct package which is then managed using [yarn workspaces](https://classic.yarnpkg.com/lang/en/docs/workspaces/). It deploys desktop apps using [electron-vite](https://electron-vite.org/) and builds web apps using [vite](https://vitejs.dev/), both of which make use of local Wolfram Language sockets deployed using [LocalDeploy](https://github.com/ToneAr/LocalDeploy) as a back end in conjunction with a node.JS inter-process communication or IPC API.
+The Wolfram React Boilerplate, shortened to WRB, is a boilerplate repository allowing the development of cross-platform applications intended to be deployed to both web and desktop sharing a common frontend. It separates each part into a distinct package which is then managed using [yarn workspaces](https://classic.bunpkg.com/lang/en/docs/workspaces/). It deploys desktop apps using [electron-vite](https://electron-vite.org/) and builds web apps using [vite](https://vitejs.dev/), both of which make use of local Wolfram Language sockets deployed using [LocalDeploy](https://github.com/ToneAr/LocalDeploy) as a back end in conjunction with a node.JS inter-process communication or IPC API.
 
-## Yarn scripts
-**This project uses `yarn` as its package manager. Using any `npm` should be avoided in place of yarn**.
+## bun scripts
+**This project uses `bun` as its package manager. Using any `npm` should be avoided in place of bun**.
 
-Setup `yarn` globally on your machine by using:
+Setup `bun` globally on your machine by using:
 ```sh
-npm i -g yarn
+npm i -g bun
 ```
 
 | Script 				| Alternatives 				| Description 										|
 | --- 					| --- 						| ---		 										|
-| `yarn test` 			| -					 		| Runs front-end jest tests		 					|
-| `yarn start:{alt}` 	| `web \| electron \| wl` 	| Starts a preview version of the application 		|
-| `yarn dev:{alt}` 		| `web \| electron` 		| Starts a development server for the application 	|
-| `yarn build:{alt}` 	| `web \| electron` 		| Compile and build package files 					|
-| `yarn package:{alt}` 	| `win \| mac \| linux` 	| Package electron application distributable for given platform |
+| `bun test` 			| -					 		| Runs front-end jest tests		 					|
+| `bun start:{alt}` 	| `web \| electron \| wl` 	| Starts a preview version of the application 		|
+| `bun dev:{alt}` 		| `web \| electron` 		| Starts a development server for the application 	|
+| `bun build:{alt}` 	| `web \| electron` 		| Compile and build package files 					|
+| `bun package:{alt}` 	| `win \| mac \| linux` 	| Package electron application distributable for given platform |
 
-To run a script from a workspace you can use the following command:
-```sh
-yarn workspace @scope/name command
-```
 
 ### Node modules & Dependencies
 Dependencies are managed by the yarn workspace, being installed in the root node_modules and being distributed through symlinks.
 
-* To install an external package to be used by a package in the workspace:
-	```sh
-	yarn workspace @scope/name add package
-	```
-
 * To install an external package to the root package:
 	```sh
-	yarn add package -W
+	bun add package -W
 	```
 	* These can then be added to each package by adding `"packageName": "*"` inside the `package.json` dependencies for each corresponding sub-package
 
@@ -65,7 +56,7 @@ ipc.on('event', (data) => {
 ```
 
 ### Electron
-Electron's backend is the electron's node.JS main process [exposed through window.api](./packages/electron/src/main/preload.ts) before being passed to the frontend. It uses `ipcMain` when inside the main process and `ipcRenderer` when inside the renderer. These can send messages and set up event listeners on either side.
+Electron's backend is the electron's node.JS main process [exposed through window.api](./packages/desktop/src/main/preload.ts) before being passed to the frontend. It uses `ipcMain` when inside the main process and `ipcRenderer` when inside the renderer. These can send messages and set up event listeners on either side.
 
 ### Web
 The web deployment's backend is an express server (WRB IPC Server) making use of [socket-io websockets](https://socket.io/docs/v4/) for communication with the frontend and is exposed as [WebHandler](./packages/web/src/renderer/WebHandler.ts) class passed to the frontend.
@@ -75,7 +66,7 @@ The web deployment's backend is an express server (WRB IPC Server) making use of
 ```sh
 npm install pm2 -g
 # or
-yarn global add pm2
+bun global add pm2
 ```
 
 ### IPC API properties
@@ -89,11 +80,11 @@ yarn global add pm2
 ## Wolfram Language
 
 ### Expression setup
-Inside `@wrb/wl/` are all the files used for the definitions and deployment of the wolfram language TCP sockets. These come as 2 main files:
+Inside `@wrb/wolfram/` are all the files used for the definitions and deployment of the wolfram language TCP sockets. These come as 2 main files:
 
 1. **dispatcher.wl**
 
-	[dispatcher.wl](/packages/wl/deploy.wls) contains the definition of the Wolfram Language expressions to deploy as TCP socket listeners. These can be any expressions supported by [GenerateHTTPResponse](http://reference.wolfram.com/language/ref/GenerateHTTPResponse.html). The file is outlined in the form:
+	[dispatcher.wl](/packages/wolfram/deploy.wls) contains the definition of the Wolfram Language expressions to deploy as TCP socket listeners. These can be any expressions supported by [GenerateHTTPResponse](http://reference.wolfram.com/language/ref/GenerateHTTPResponse.html). The file is outlined in the form:
 
 	```wl
 	{
@@ -105,7 +96,7 @@ Inside `@wrb/wl/` are all the files used for the definitions and deployment of t
 
 2. **deploy.wls**
 
-	This script file will install and initialize the LocalDeploy and then deploy the expressions defined inside [`expressions.wl`](/packages/wl/expressions.wl).
+	This script file will install and initialize the LocalDeploy and then deploy the expressions defined inside [`expressions.wl`](/packages/wolfram/expressions.wl).
 
 ### React hook
 The wolfram language interface can be accessed by using the `useWL()` hook. [This hook](/packages/frontend/src/hooks/useWL.tsx) exposes various methods for interfacing with the WL TCP sockets deployed by LocalDeploy (covered in the next section). Its main 2 properties are:
@@ -167,18 +158,18 @@ server {
 1. Configure **all** `package.json` files.
    * Main: [package.json](/package.json)
    * Frontend: [package.json](/packages/frontend/package.json)
-   * Electron: [package.json](/packages/electron/package.json)
+   * Electron: [package.json](/packages/desktop/package.json)
    * Web:[package.json](/packages/web/package.json)
    * WL: [package.json](/packages/web/package.json)
-  
+
 2. Upgrade the electron devtools by setting the `UPGRADE_EXTENSIONS` environment variable:
    * Unix:
         ```
-		UPGRADE_EXTENSIONS=1 yarn start:electron
+		UPGRADE_EXTENSIONS=1 bun start:electron
 		```
    * Windows:
         ```
-		set UPGRADE_EXTENSIONS=1 && yarn start:electron
+		set UPGRADE_EXTENSIONS=1 && bun start:electron
 		```
 3. Configure GitHub templates within [.github](/.github/ISSUE_TEMPLATE/) (If required)
 

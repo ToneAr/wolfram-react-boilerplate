@@ -1,7 +1,7 @@
 import { Box, LinearProgress, Stack } from '@mui/material';
 import Spikey from '../../../assets/icon.svg?react';
 
-export default function LoadingScreen() {
+export default function LoadingScreen(): React.ReactElement {
 	return (
 		<Stack
 			className="main"

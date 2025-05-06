@@ -9,12 +9,12 @@ function IPCProvider({
 }: {
 	api: Handler;
 	children: React.ReactNode;
-}) {
+}): React.ReactElement {
 	IPCContext = createContext<Handler>(api);
 	return <IPCContext.Provider value={api}>{children}</IPCContext.Provider>;
 }
 
-function useIPC() {
+function useIPC(): Handler {
 	return useContext(IPCContext);
 }
 
