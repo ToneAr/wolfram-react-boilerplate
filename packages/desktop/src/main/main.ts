@@ -198,10 +198,9 @@ function startWL(): void {
 		return;
 	}
 
-	const scriptLoc =
-		process.env.NODE_ENV === 'development'
-			? require.resolve('@wrb/wolfram')
-			: path.resolve(__dirname, '../../../../../wl/deploy.wls'); // TODO: This annoys me. Fix it.
+	const scriptLoc = app.isPackaged
+		? path.join(process.resourcesPath, 'wl', 'scripts', 'deploy.wls')
+		: require.resolve('@wrb/wolfram');
 
 	wlProc = nodeChildProcess.spawn(
 		wlCmd,

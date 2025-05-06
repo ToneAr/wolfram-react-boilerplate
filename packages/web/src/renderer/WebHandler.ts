@@ -6,19 +6,22 @@ class WebHandler {
 	public api: {
 		env: Environments;
 		ipc: {
-			on: (channel: string, callback: (...args: any[]) => void) => void;
-			send: (channel: string, ...args: any[]) => void;
+			on: (
+				channel: string,
+				callback: (...args: unknown[]) => void,
+			) => void;
+			send: (channel: string, ...args: unknown[]) => void;
 			once: (channel: string, func: (...args: unknown[]) => void) => void;
 		};
 	};
-	private on(channel: string, callback: (...args: any[]) => void): void {
+	private on(channel: string, callback: (...args: unknown[]) => void): void {
 		console.log(`Setting up listener for event: ${channel}`);
 		this.socket.on(channel, (...args) => {
 			console.log(`Received event: ${channel}`, args);
 			callback(...args);
 		});
 	}
-	private send(channel: string, ...args: any[]): void {
+	private send(channel: string, ...args: unknown[]): void {
 		console.log(`Sending event: ${channel}`, args);
 		this.socket.emit(channel, ...args);
 	}
@@ -34,11 +37,8 @@ class WebHandler {
 				on: this.on.bind(this),
 				send: this.send.bind(this),
 				once: this.once.bind(this),
-
-				
 			},
 		};
-		
 	}
 }
 

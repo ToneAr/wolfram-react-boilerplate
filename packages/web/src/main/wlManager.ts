@@ -2,52 +2,82 @@ import { spawn, execSync } from 'child_process';
 import { Socket, Server } from 'socket.io';
 import axios from 'axios';
 
+export interface IWLWebSocketMessage {
+	uuid: string;
+	tag: string;
+	message: string;
+	success: boolean;
+}
+
 export default class WLManager {
 	isQuitting: boolean = false;
 	socket: Socket;
 	server: Server;
 	base: string;
+	restarts: number = 0;
+	WLWebSocket: WebSocket | null = null;
 	wlCmd: string = process.platform === 'linux' ? 'math' : 'wolframscript';
 
 	constructor(socket: Socket, server: Server, base: string) {
 		this.socket = socket;
 		this.server = server;
 		this.base = base;
+		this.connectWebSocket = this.connectWebSocket.bind(this);
 		this.startWL = this.startWL.bind(this);
 		this.cleanupWL = this.cleanupWL.bind(this);
 		this.req = this.req.bind(this);
+	}
+
+	connectWebSocket(): void {
+		let isStartup = true;
+		this.WLWebSocket = new WebSocket('ws://localhost:38080');
+		this.WLWebSocket.onopen = () => {
+			console.log('WL[\x1b[0;36mWebSocket\x1b[0m]: Connected');
+		};
+		this.WLWebSocket.onmessage = (event) => {
+			const data: IWLWebSocketMessage = JSON.parse(event.data.toString());
+			if (data.tag === 'connected' && data.success) {
+				global.isWLActive = true;
+				isStartup = false;
+				this.socket.emit('wl-status', 0);
+			} else if (data.tag === 'disconnected' && data.success) {
+				global.isWLActive = false;
+				this.socket.emit('wl-status', -1);
+			}
+		};
+		this.WLWebSocket.onclose = (): void => {
+			global.isWLActive = false;
+			if (!isStartup) {
+				console.log('WebSocket disconnected');
+				this.socket.emit('wl-status', -1);
+			}
+			this.WLWebSocket = null;
+			setTimeout(this.connectWebSocket, 3000);
+		};
+		this.WLWebSocket.onerror = (): void => {
+			global.isWLActive = false;
+			if (!isStartup) {
+				console.error('WebSocket error');
+				this.WLWebSocket?.close();
+			} else setTimeout(this.connectWebSocket, 3000);
+		};
 	}
 
 	checkWL(): boolean {
 		try {
 			execSync(`${this.wlCmd} -version`);
 			return true;
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		} catch (error) {
-			return false;
-		}
-	}
-
-	aliveQ(): boolean {
-		try {
-			const result = execSync(
-				'curl -s --max-time 2 http://localhost:8888/aliveQ',
-			)
-				.toString()
-				.trim();
-			return result === 'true';
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		} catch (e) {
+		} catch {
 			return false;
 		}
 	}
 
 	startWL(): void {
-		if (global.wlProc && this.aliveQ()) {
+		this.connectWebSocket();
+		if (global.wlProc && global.isWLActive) {
 			this.socket.emit('wl-status', 0);
 			return;
 		}
-
 		global.wlProc = spawn(
 			this.wlCmd,
 			[
@@ -65,10 +95,8 @@ export default class WLManager {
 				detached: false,
 			},
 		);
-
 		console.log(`WL[\x1b[0;32mPID\x1b[0m]: ${global.wlProc.pid}`);
-
-		global.wlProc.stdout.on('data', (data) => {
+		global.wlProc.stdout.on('data', (data: Blob) => {
 			const dataStr = data
 				.toString()
 				.trim()
@@ -85,12 +113,10 @@ export default class WLManager {
 				this.socket.emit('wl-status', 0);
 			}
 		});
-
-		global.wlProc.stderr.on('data', (err) => {
+		global.wlProc.stderr.on('data', (err: Error) => {
 			console.log(`WL[\x1b[0;31merror\x1b[0m]: ${err}`);
 		});
-
-		global.wlProc.on('exit', (code) => {
+		global.wlProc.on('exit', (code: number | null) => {
 			if (!this.isQuitting) {
 				console.log(`WL exit code: ${code}`);
 				console.error(
@@ -104,7 +130,7 @@ export default class WLManager {
 	}
 
 	cleanupWL(): void {
-		if (this.server.sockets.sockets.size < 1 && this.aliveQ()) {
+		if (this.server.sockets.sockets.size < 1 && global.isWLActive) {
 			const wait /* in minutes */ =
 				process.env.NODE_ENV === 'development' ? 0.25 : 5;
 			console.log(

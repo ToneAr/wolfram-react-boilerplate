@@ -8,7 +8,7 @@ import Favicon from 'react-favicon';
 import favicon from '@wrb/frontend/assets/icon.ico';
 
 const socket = io(
-	process.env.NODE_ENV === 'development' ? 'localhost:3000' : `${domain}`,
+	process.env.NODE_ENV === 'development' ? 'localhost:3001' : `${domain}`,
 	{
 		path: process.env.NODE_ENV === 'development' ? '/' : '/.ipc/',
 	},
