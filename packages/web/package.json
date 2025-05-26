@@ -18,6 +18,7 @@
 		"start": "concurrently \"bun start:server\" \"bun start:client\"",
 		"start:client": "vite",
 		"start:server": "cross-env NODE_ENV=production pm2 start ./build/src/main/server.js --name \"wrb-web-ipc\"",
+		"stop:server": "pm2 stop wrb-web-ipc",
 		"dev": "concurrently \"bun dev:server\" \"bun dev:client\"",
 		"dev:client": "cross-env NODE_ENV=development vite dev",
 		"dev:server": "cross-env NODE_ENV=development nodemon",
